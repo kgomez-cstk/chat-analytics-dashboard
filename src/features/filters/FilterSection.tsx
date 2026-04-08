@@ -12,14 +12,16 @@ import {
   Input,
 } from '@chakra-ui/react';
 import { Select } from 'chakra-react-select';
-import type { MultiValue } from 'chakra-react-select';
-import { MdCalendarToday, MdFilterAlt, MdFlag, MdSearch, MdDownload, MdFilterAltOff } from 'react-icons/md';
+import { MdCalendarToday, MdFilterAlt, MdFlag, MdSearch, MdFilterAltOff } from 'react-icons/md';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import {
   setCanal,
   setSkills,
   setTipoUsuario,
   setRedSocial,
+  setGestiones,
+  setUsuarioInicia,
+  setUsuarioFinaliza,
   setFechaInicio,
   setFechaFin,
   resetFilters,
@@ -29,22 +31,17 @@ import {
   skillOptions,
   tipoUsuarioOptions,
   redSocialOptions,
+  gestionOptions,
+  usuarioIniciaOptions,
+  usuarioFinalizaOptions,
 } from '../../utils/mockData';
-import { exportAdvisorsToExcel } from '../reports/exportExcel';
-import { exportAdvisorsToPdf } from '../reports/exportPdf';
 import type { FilterOption } from '../../types';
 
 const FilterSection: React.FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector((state) => state.filters);
-  const advisors = useAppSelector((state) => state.dashboard.advisors);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const customNoOptionsMessage = () => 'Sin opciones disponibles';
-  const handleExport = () => {
-    // Multi-export for demonstration
-    exportAdvisorsToExcel(advisors);
-    exportAdvisorsToPdf(advisors);
-  };
 
   return (
     <Box
@@ -59,8 +56,8 @@ const FilterSection: React.FC = () => {
         align={{ base: 'stretch', lg: 'center' }}
       >
         {/* Left Section: Filters */}
-        <Box flex="1" maxH="300px" overflowY="auto" pr={2}>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+        <Box flex="1" overflowY="auto" pr={2}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
             {/* Canal - Single Select */}
             <Box minW="150px">
               <Select
@@ -70,7 +67,7 @@ const FilterSection: React.FC = () => {
                 placeholder="Canal"
                 options={canalOptions}
                 value={filters.canal}
-                onChange={(val) => dispatch(setCanal(val as FilterOption[]))}
+                onChange={(val) => dispatch(setCanal(val as unknown as FilterOption[]))}
                 menuPortalTarget={document.body}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                 chakraStyles={{
@@ -93,7 +90,7 @@ const FilterSection: React.FC = () => {
                 placeholder="Skill / Equipo"
                 options={skillOptions}
                 value={filters.skills}
-                onChange={(val) => dispatch(setSkills(val as FilterOption[]))}
+                onChange={(val) => dispatch(setSkills(val as unknown as FilterOption[]))}
                 menuPortalTarget={document.body}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                 chakraStyles={{
@@ -116,7 +113,77 @@ const FilterSection: React.FC = () => {
                 placeholder="Red Social"
                 options={redSocialOptions}
                 value={filters.redSocial}
-                onChange={(val) => dispatch(setRedSocial(val as FilterOption[]))}
+                onChange={(val) => dispatch(setRedSocial(val as unknown as FilterOption[]))}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                chakraStyles={{
+                  control: (provided) => ({
+                    ...provided,
+                    bg: 'brand.surfaceContainerLowest',
+                    rounded: 'lg',
+                    border: '1px solid',
+                    borderColor: 'brand.outlineVariant',
+                  }),
+                }}
+              />
+            </Box>
+
+            {/* Gestiones - Multi Select */}
+            <Box minW="150px">
+              <Select
+                isMulti
+                instanceId="gestiones-select"
+                noOptionsMessage={customNoOptionsMessage}
+                placeholder="Gestiones"
+                options={gestionOptions}
+                value={filters.gestiones}
+                onChange={(val) => dispatch(setGestiones(val as unknown as FilterOption[]))}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                chakraStyles={{
+                  control: (provided) => ({
+                    ...provided,
+                    bg: 'brand.surfaceContainerLowest',
+                    rounded: 'lg',
+                    border: '1px solid',
+                    borderColor: 'brand.outlineVariant',
+                  }),
+                }}
+              />
+            </Box>
+
+            {/* Usuario Inicia - Single Select */}
+            <Box minW="150px">
+              <Select
+                instanceId="usuario-inicia-select"
+                noOptionsMessage={customNoOptionsMessage}
+                placeholder="Usuario que inicia"
+                options={usuarioIniciaOptions}
+                value={filters.usuarioInicia}
+                onChange={(val) => dispatch(setUsuarioInicia(val ? [val as FilterOption] : []))}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                chakraStyles={{
+                  control: (provided) => ({
+                    ...provided,
+                    bg: 'brand.surfaceContainerLowest',
+                    rounded: 'lg',
+                    border: '1px solid',
+                    borderColor: 'brand.outlineVariant',
+                  }),
+                }}
+              />
+            </Box>
+
+            {/* Usuario Finaliza - Single Select */}
+            <Box minW="150px">
+              <Select
+                instanceId="usuario-finaliza-select"
+                noOptionsMessage={customNoOptionsMessage}
+                placeholder="Usuario que finaliza"
+                options={usuarioFinalizaOptions}
+                value={filters.usuarioFinaliza}
+                onChange={(val) => dispatch(setUsuarioFinaliza(val ? [val as FilterOption] : []))}
                 menuPortalTarget={document.body}
                 styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                 chakraStyles={{
@@ -196,18 +263,6 @@ const FilterSection: React.FC = () => {
           >
             Limpiar Filtros
           </Button>
-          <Button
-            variant="outline"
-            leftIcon={<Icon as={MdDownload} />}
-            borderColor="brand.primary"
-            shadow="md"
-            color="brand.primary"
-            _hover={{ bg: 'brand.primaryContainer' }}
-            onClick={handleExport}
-            w="full"
-          >
-            Exportar
-          </Button>
         </VStack>
       </Flex>
     </Box>
@@ -215,20 +270,3 @@ const FilterSection: React.FC = () => {
 };
 
 export default FilterSection;
-/*Agregar Filtros
-Gestion
-Operador que inicia
-Operador que finaliza
-
-Nueva tabla intermedia
-
-Primer agrupador canal
-segundo skill
-Tercero operador
-
-Cantidad conversaciones unicas
-promedio tiempo en cola
-Promedio de TME
-Promedio de Tmo
-Promedio de Tma
-promedio de tmr*/

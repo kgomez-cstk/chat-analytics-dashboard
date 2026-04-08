@@ -10,6 +10,9 @@ const initialState: FilterState = {
   skills: [],
   tipoUsuario: [],
   redSocial: [{ value: 1, label: 'WhatsApp' }],
+  gestiones: [],
+  usuarioInicia: [],
+  usuarioFinaliza: [],
   fechaInicio: today.inicio,
   fechaFin: today.fin,
   dateMode: 'dateonly',
@@ -31,6 +34,15 @@ const filtersSlice = createSlice({
     setRedSocial(state, action: PayloadAction<FilterOption[]>) {
       state.redSocial = action.payload;
     },
+    setGestiones(state, action: PayloadAction<FilterOption[]>) {
+      state.gestiones = action.payload;
+    },
+    setUsuarioInicia(state, action: PayloadAction<FilterOption[]>) {
+      state.usuarioInicia = action.payload;
+    },
+    setUsuarioFinaliza(state, action: PayloadAction<FilterOption[]>) {
+      state.usuarioFinaliza = action.payload;
+    },
     setFechaInicio(state, action: PayloadAction<string>) {
       state.fechaInicio = action.payload;
     },
@@ -47,6 +59,9 @@ const filtersSlice = createSlice({
         skills: [],
         tipoUsuario: [],
         redSocial: [{ value: 1, label: 'WhatsApp' }],
+        gestiones: [],
+        usuarioInicia: [],
+        usuarioFinaliza: [],
         fechaInicio: t.inicio,
         fechaFin: t.fin,
         dateMode: 'dateonly' as const,
@@ -60,6 +75,9 @@ export const {
   setSkills,
   setTipoUsuario,
   setRedSocial,
+  setGestiones,
+  setUsuarioInicia,
+  setUsuarioFinaliza,
   setFechaInicio,
   setFechaFin,
   setDateMode,

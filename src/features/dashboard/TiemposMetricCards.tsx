@@ -3,72 +3,89 @@ import {
   SimpleGrid,
   Box,
   Text,
-  Flex,
   Icon,
-  useTheme,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { MdChatBubble, MdPersonSearch, MdSpeed, MdTrendingUp, MdTrendingDown, MdInfo } from 'react-icons/md';
+import { MdAccessTime, MdTimer, MdSpeed } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/useRedux';
 import type { SLAMetric } from '../../types';
 
 const MotionBox = motion.create(Box);
 
-const MetricCards: React.FC = () => {
-  const advisors = useAppSelector((state) => state.dashboard.advisors);
+const timeToSeconds = (time: string) => {
+  if (!time) return 0;
+  const parts = time.split(':').map(Number);
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return 0;
+};
 
-  const totals = React.useMemo(() => {
-    const counts = advisors.reduce(
+const secondsToTime = (totalSec: number) => {
+  if (isNaN(totalSec) || !totalSec) return '00:00:00';
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = Math.floor(totalSec % 60);
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+};
+
+const TiemposMetricCards: React.FC = () => {
+  const tiemposAtencion = useAppSelector((state) => state.dashboard.tiemposAtencion);
+
+  const averages = React.useMemo(() => {
+    if (!tiemposAtencion || tiemposAtencion.length === 0) {
+      return { tma: '00:00:00', tmo: '00:00:00', tmr: '00:00:00' };
+    }
+
+    const sums = tiemposAtencion.reduce(
       (acc, curr) => ({
-        totales: acc.totales + curr.conversacionesTotales,
-        unicas: acc.unicas + curr.conversacionesMenores3Min,
+        tma: acc.tma + timeToSeconds(curr.tma),
+        tmo: acc.tmo + timeToSeconds(curr.tmo),
+        tmr: acc.tmr + timeToSeconds(curr.tmr),
       }),
-      { totales: 0, unicas: 0 }
+      { tma: 0, tmo: 0, tmr: 0 }
     );
 
-    const performance = counts.totales > 0
-      ? (counts.unicas / counts.totales) * 100
-      : 0;
-
+    const len = tiemposAtencion.length;
     return {
-      totales: counts.totales.toLocaleString(),
-      unicas: counts.unicas.toLocaleString(),
-      performance: performance.toFixed(1) + '%',
+      tma: secondsToTime(sums.tma / len),
+      tmo: secondsToTime(sums.tmo / len),
+      tmr: secondsToTime(sums.tmr / len),
     };
-  }, [advisors]);
+  }, [tiemposAtencion]);
 
   const metrics: SLAMetric[] = [
     {
-      label: 'Total Conversaciones',
-      value: totals.totales,
+      label: 'Promedio Global TMA',
+      value: averages.tma,
       trend: 0,
       trendLabel: '',
       trendDirection: 'neutral',
       borderColor: 'brand.primary',
-      icon: 'chat_bubble',
+      icon: 'access_time',
     },
     {
-      label: 'Total Conversaciones Únicas',
-      value: totals.unicas,
+      label: 'Promedio Global TMO',
+      value: averages.tmo,
       trend: 0,
       trendLabel: '',
       trendDirection: 'neutral',
       borderColor: 'brand.secondary',
-      icon: 'person_search',
+      icon: 'speed',
     },
     {
-      label: 'Promedio % Conv. Masivas o Vinculadas',
-      value: totals.performance,
+      label: 'Promedio Global TMR',
+      value: averages.tmr,
       trend: 0,
       trendLabel: '',
       trendDirection: 'neutral',
-      borderColor: 'brand.error',
-      icon: 'speed',
+      borderColor: 'brand.tertiary',
+      icon: 'timer',
     },
   ];
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={5}>
+    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={6}>
       {metrics.map((metric, index) => (
         <MotionBox
           key={metric.label}
@@ -97,11 +114,11 @@ const MetricCards: React.FC = () => {
           >
             <Icon
               as={
-                metric.icon === 'chat_bubble'
-                  ? MdChatBubble
-                  : metric.icon === 'person_search'
-                    ? MdPersonSearch
-                    : MdSpeed
+                metric.icon === 'access_time'
+                  ? MdAccessTime
+                  : metric.icon === 'speed'
+                    ? MdSpeed
+                    : MdTimer
               }
               fontSize="6xl"
             />
@@ -129,4 +146,4 @@ const MetricCards: React.FC = () => {
   );
 };
 
-export default MetricCards;
+export default TiemposMetricCards;

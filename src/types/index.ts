@@ -49,6 +49,9 @@ export interface FilterState {
   skills: FilterOption[];
   tipoUsuario: FilterOption[];
   redSocial: FilterOption[];
+  gestiones: FilterOption[];
+  usuarioInicia: FilterOption[];
+  usuarioFinaliza: FilterOption[];
   fechaInicio: string;
   fechaFin: string;
   dateMode: 'datetime' | 'dateonly';

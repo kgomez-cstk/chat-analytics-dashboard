@@ -6,14 +6,14 @@ interface UserState {
   userData: UserData | null;
   isInitialized: boolean;
   elmtPaginado: number;
-  activePage: 'tiempos' | 'conversaciones';
+  activePage: 'dashboard';
 }
 
 const initialState: UserState = {
   userData: null,
   isInitialized: false,
   elmtPaginado: 20,
-  activePage: 'tiempos',
+  activePage: 'dashboard',
 };
 
 const userSlice = createSlice({
@@ -35,14 +35,14 @@ const userSlice = createSlice({
       }
       state.isInitialized = true;
     },
-    setActivePage(state, action: PayloadAction<'tiempos' | 'conversaciones'>) {
+    setActivePage(state, action: PayloadAction<'dashboard'>) {
       state.activePage = action.payload;
     },
     clearUserData(state) {
       state.userData = null;
       state.isInitialized = false;
       state.elmtPaginado = 20;
-      state.activePage = 'tiempos';
+      state.activePage = 'dashboard';
     },
   },
 });

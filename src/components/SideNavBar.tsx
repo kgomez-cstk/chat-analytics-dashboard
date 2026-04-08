@@ -5,11 +5,10 @@ import {
   Text,
   VStack,
   Image,
-  Icon,
 } from '@chakra-ui/react';
 import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
 import { setActivePage } from '../features/user/userSlice';
-import { MdAccessTime, MdChatBubble } from 'react-icons/md';
+import { MdChatBubble } from 'react-icons/md';
 
 interface NavItem {
   label: string;
@@ -19,8 +18,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Tiempos de Atención', id: 'tiempos', icon: MdAccessTime, materialIcon: 'acute' },
-  { label: 'Conversaciones', id: 'conversaciones', icon: MdChatBubble, materialIcon: 'chat_bubble' },
+  { label: 'Consolidado Maestro', id: 'dashboard', icon: MdChatBubble, materialIcon: 'dashboard' },
 ];
 
 const SideNavBar: React.FC = () => {

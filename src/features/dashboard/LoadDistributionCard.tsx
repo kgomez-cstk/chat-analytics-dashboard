@@ -26,7 +26,7 @@ const LoadDistributionCard: React.FC = () => {
         <Text fontFamily="heading" fontWeight="bold" color="brand.onSurface">
           Distribución de Carga
         </Text>
-        <Icon as={MdMoreHoriz} color="brand.onSurfaceVariant" />
+
       </Flex>
 
       {/* Stacked Horizontal Bar */}

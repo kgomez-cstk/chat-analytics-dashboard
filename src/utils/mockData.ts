@@ -31,6 +31,23 @@ export const redSocialOptions: FilterOption[] = [
   { value: 5, label: 'Web Chat' },
 ];
 
+export const gestionOptions: FilterOption[] = [
+  { value: 'info', label: 'Información General' },
+  { value: 'quejas', label: 'Quejas' },
+  { value: 'pagos', label: 'Pagos' },
+  { value: 'bajas', label: 'Bajas' },
+];
+
+export const usuarioIniciaOptions: FilterOption[] = [
+  { value: 'u1', label: 'Carlos Mendoza' },
+  { value: 'u2', label: 'Lucia Torres' },
+];
+
+export const usuarioFinalizaOptions: FilterOption[] = [
+  { value: 'u3', label: 'Marta Gomez' },
+  { value: 'u4', label: 'Jorge Ruiz' },
+];
+
 // ─── Mock Metrics ───
 
 export const mockMetrics: SLAMetric[] = [

@@ -19,11 +19,11 @@ import {
   useReactTable,
   getPaginationRowModel,
 } from '@tanstack/react-table';
-import { 
-  MdChevronLeft, 
-  MdChevronRight, 
-  MdFirstPage, 
-  MdLastPage 
+import {
+  MdChevronLeft,
+  MdChevronRight,
+  MdFirstPage,
+  MdLastPage
 } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/useRedux';
 import type { TiemposAtencionRow } from '../../types';
@@ -102,7 +102,7 @@ const TiemposAtencionTable: React.FC = () => {
       <Box overflowX="auto">
         <Table variant="simple" size="sm" border="1px solid" borderColor="brand.outlineVariant">
           <Thead>
-            {/* Header Level 1: "Desde" */}
+            {/* Header Level 1: "Desde" 
             <Tr bg="gray.50">
               <Th colSpan={2} color="gray.600" textAlign="right" py={2} borderRight="1px solid" borderColor="brand.outlineVariant">Desde:</Th>
               <Th color="orange.600" fontSize="10px" borderRight="1px solid" borderColor="brand.outlineVariant">Ingreso de conversación al canal</Th>
@@ -110,7 +110,8 @@ const TiemposAtencionTable: React.FC = () => {
               <Th color="blue.600" fontSize="10px" borderRight="1px solid" borderColor="brand.outlineVariant">Conversación asignada a AVO</Th>
               <Th color="green.600" fontSize="10px">Ingreso de conversación al canal</Th>
             </Tr>
-            {/* Header Level 2: "Hasta" */}
+            */}
+            {/* Header Level 2: "Hasta" 
             <Tr bg="gray.50">
               <Th colSpan={2} color="gray.600" textAlign="right" py={2} borderRight="1px solid" borderColor="brand.outlineVariant">Hasta:</Th>
               <Th color="orange.600" fontSize="10px" borderRight="1px solid" borderColor="brand.outlineVariant">AVO finaliza conversación</Th>
@@ -118,26 +119,27 @@ const TiemposAtencionTable: React.FC = () => {
               <Th color="blue.600" fontSize="10px" borderRight="1px solid" borderColor="brand.outlineVariant">AVO finaliza conversación</Th>
               <Th color="green.600" fontSize="10px">Primera respuesta de AVO</Th>
             </Tr>
+            */}
             {/* Header Level 3: Definition and Main Header */}
             <Tr bg="gray.100">
-               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant">No.</Th>
-               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">Asesor de Venta Online AVO</Th>
-               <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                  <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Atención</Text>
-                  <Box bg="orange.600" color="white" py={2} rounded="sm">TMA</Box>
-               </Th>
-               <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                  <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio Espera Operador</Text>
-                  <Box bg="purple.700" color="white" py={2} rounded="sm">TME Operador</Box>
-               </Th>
-               <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                  <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Operación</Text>
-                  <Box bg="blue.700" color="white" py={2} rounded="sm">TMO</Box>
-               </Th>
-               <Th textAlign="center">
-                  <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Respuesta</Text>
-                  <Box bg="green.600" color="white" py={2} rounded="sm">TMR</Box>
-               </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant">No.</Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">Asesor de Venta Online AVO</Th>
+              <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
+                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Atención</Text>
+                <Box bg="orange.600" color="white" py={2} rounded="sm">TMA</Box>
+              </Th>
+              <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
+                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio Espera Operador</Text>
+                <Box bg="purple.700" color="white" py={2} rounded="sm">TME Operador</Box>
+              </Th>
+              <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
+                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Operación</Text>
+                <Box bg="blue.700" color="white" py={2} rounded="sm">TMO</Box>
+              </Th>
+              <Th textAlign="center">
+                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Respuesta</Text>
+                <Box bg="green.600" color="white" py={2} rounded="sm">TMR</Box>
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -148,11 +150,11 @@ const TiemposAtencionTable: React.FC = () => {
                 transition="background 0.2s"
               >
                 {row.getVisibleCells().map((cell, idx) => (
-                  <Td 
-                    key={cell.id} 
-                    py={3} 
-                    fontSize="sm" 
-                    borderRight="1px solid" 
+                  <Td
+                    key={cell.id}
+                    py={3}
+                    fontSize="sm"
+                    borderRight="1px solid"
                     borderColor="brand.outlineVariant"
                     textAlign={idx > 1 ? "center" : "left"}
                   >
