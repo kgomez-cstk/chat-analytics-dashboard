@@ -26,7 +26,7 @@ const TiemposAtencionPage: React.FC = () => {
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [dispatch]);
+  }, [dispatch, mockTiemposAtencion]);
 
   if (isLoading) return <LoadingDashboard />;
 

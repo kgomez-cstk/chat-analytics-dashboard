@@ -47,16 +47,16 @@ const MasterDashboardPage: React.FC = () => {
         setDashboardData({
           metrics: mockMetrics,
           advisors: mockAdvisors,
+          tiemposAtencion: mockTiemposAtencion,
           chartData: mockBarChartData,
           loadDistribution: mockLoadDistribution,
         })
       );
-      dispatch(setTiemposAtencion(mockTiemposAtencion));
       dispatch(setLoading(false));
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [dispatch]);
+  }, [dispatch, mockTiemposAtencion]);
 
   if (isLoading) return <LoadingDashboard />;
 

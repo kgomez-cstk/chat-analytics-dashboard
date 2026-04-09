@@ -41,23 +41,35 @@ const TiemposAtencionTable: React.FC = () => {
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('nombre', {
-        header: 'Asesor de Venta Online AVO',
+        header: 'Asesor',
         cell: (info) => (
           <Text fontSize="sm" fontWeight="medium" color="brand.onSurface">
             {info.getValue()}
           </Text>
         ),
       }),
-      columnHelper.accessor('tma', {
-        header: 'TMA',
+      columnHelper.accessor('clientesUnicos', {
+        header: 'Clientes Únicos',
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor('cantidadConversaciones', {
+        header: 'Cantidad de Conversaciones',
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor('tiempoEnCola', {
+        header: 'Tiempo en Cola',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('tmeOperador', {
-        header: 'TME Operador',
+        header: 'TME',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('tmo', {
         header: 'TMO',
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor('tma', {
+        header: 'TMA',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('tmr', {
@@ -81,14 +93,20 @@ const TiemposAtencionTable: React.FC = () => {
   });
 
   const totals = useMemo(() => {
+    const totalClientes = data.reduce((sum, row) => sum + (row.clientesUnicos || 0), 0);
+    const totalConversaciones = data.reduce((sum, row) => sum + (row.cantidadConversaciones || 0), 0);
+    
     // Dummy totals for now since values are formatted strings
     return {
+      clientesUnicos: totalClientes,
+      cantidadConversaciones: totalConversaciones,
+      tiempoEnCola: '00:03:52', // Dummy total/average
       tma: '01:57:12',
       tme: '00:21:01',
       tmo: '00:35:25',
       tmr: '00:28:40',
     };
-  }, []);
+  }, [data]);
 
   return (
     <Box
@@ -123,21 +141,30 @@ const TiemposAtencionTable: React.FC = () => {
             {/* Header Level 3: Definition and Main Header */}
             <Tr bg="gray.100">
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant">No.</Th>
-              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">Asesor de Venta Online AVO</Th>
-              <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Atención</Text>
-                <Box bg="orange.600" color="white" py={2} rounded="sm">TMA</Box>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">Asesor</Th>
+               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                Clientes<br/>Únicos
+              </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                Cantidad de<br/>Conversaciones
+              </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                Tiempo en<br/>Cola
               </Th>
               <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio Espera Operador</Text>
+                {/*<Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio Espera Operador</Text>*/}
                 <Box bg="purple.700" color="white" py={2} rounded="sm">TME Operador</Box>
               </Th>
               <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
-                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Operación</Text>
+                {/*<Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Operación</Text>*/}
                 <Box bg="blue.700" color="white" py={2} rounded="sm">TMO</Box>
               </Th>
+              <Th textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
+                {/*<Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Atención</Text>*/}
+                <Box bg="orange.600" color="white" py={2} rounded="sm">TMA</Box>
+              </Th>
               <Th textAlign="center">
-                <Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Respuesta</Text>
+                {/*<Text fontSize="10px" color="gray.600" mb={1}>Tiempo Medio de Respuesta</Text>*/}
                 <Box bg="green.600" color="white" py={2} rounded="sm">TMR</Box>
               </Th>
             </Tr>
@@ -169,9 +196,12 @@ const TiemposAtencionTable: React.FC = () => {
               <Td colSpan={2} py={3} fontSize="sm" textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">
                 TOTAL EQUIPO
               </Td>
-              <Td textAlign="center" bg="orange.600" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tma}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.clientesUnicos}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.cantidadConversaciones}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tiempoEnCola}</Td>
               <Td textAlign="center" bg="purple.700" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tme}</Td>
               <Td textAlign="center" bg="blue.700" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tmo}</Td>
+              <Td textAlign="center" bg="orange.600" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tma}</Td>
               <Td textAlign="center" bg="green.600" color="white">{totals.tmr}</Td>
             </Tr>
           </Tfoot>

@@ -19,7 +19,7 @@ import { MdDownload } from 'react-icons/md';
 const masterData = [
   {
     type: 'canal',
-    label: 'WhatsApp Business',
+    label: 'Hyundai - Costa Rica',
     icon: 'chat',
     conv: '1,240',
     cola: '00:02:15',
@@ -30,7 +30,7 @@ const masterData = [
   },
   {
     type: 'skill',
-    label: 'Ventas Directas (LATAM)',
+    label: 'Att. General Hyundai CR',
     icon: 'build',
     conv: '850',
     cola: '00:01:50',
@@ -61,8 +61,8 @@ const masterData = [
   },
   {
     type: 'skill',
-    label: 'Soporte Técnico Especializado',
-    icon: 'support_agent',
+    label: 'Ventas Hyundai Costa Rica',
+    icon: 'build',
     conv: '390',
     cola: '00:03:40',
     tme: '00:01:15',
@@ -72,8 +72,8 @@ const masterData = [
   },
   {
     type: 'canal',
-    label: 'Web Chat Global',
-    icon: 'public',
+    label: 'Jeep Guatemala',
+    icon: 'chat',
     conv: '540',
     cola: '00:01:05',
     tme: '00:00:20',
@@ -109,7 +109,7 @@ const MasterDataTable: React.FC = () => {
           />
         </Flex>
       </Flex>
-      
+
       <TableContainer>
         <Table variant="unstyled" w="full">
           <Thead bg="brand.surfaceContainerHigh">
@@ -118,22 +118,22 @@ const MasterDataTable: React.FC = () => {
                 Estructura Jerárquica (Canal / Skill / Usuario)
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Conv. Únicas
+                Clientes Únicos
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Prom T. en Cola
+                Tiempo en Cola
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Prom. TME (Operador)
+                TME
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Prom. TMO
+                TMO
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Prom. TMA
+                TMA
               </Th>
               <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
-                Prom. TMR
+                TMR
               </Th>
             </Tr>
           </Thead>
@@ -141,7 +141,7 @@ const MasterDataTable: React.FC = () => {
             {masterData.map((row, idx) => {
               const rowProps: any = { borderBottom: "1px solid", borderColor: "blackAlpha.50" };
               let paddingLeft = "px-6";
-              
+
               if (row.type === 'canal') {
                 rowProps.bg = 'blue.50';
                 rowProps._hover = { bg: 'blue.100' };
@@ -191,7 +191,7 @@ const MasterDataTable: React.FC = () => {
           </Tbody>
         </Table>
       </TableContainer>
-      
+
       <Flex px={6} py={4} bg="gray.50" borderTop="1px solid" borderColor="blackAlpha.100" justify="space-between" align="center">
         <Text fontSize="xs" color="gray.500" fontWeight="medium">Mostrando 124 registros jerárquicos</Text>
         <Flex gap={1}>

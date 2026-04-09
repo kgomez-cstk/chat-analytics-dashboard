@@ -33,6 +33,9 @@ export interface TiemposAtencionRow {
   id: number;
   nombre: string;
   iniciales: string;
+  clientesUnicos: number;
+  cantidadConversaciones: number;
+  tiempoEnCola: string;
   tma: string;
   tmeOperador: string;
   tmo: string;
