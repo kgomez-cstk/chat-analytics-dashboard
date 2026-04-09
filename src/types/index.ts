@@ -19,8 +19,12 @@ export interface AdvisorRow {
   id: number;
   nombre: string;
   iniciales: string;
+  clientesUnicos: number;                    // NEW
   conversacionesAtendidasCerradas: number;
   conversacionesTotales: number;
+  conversacionesConRespuesta: number;        // NEW
+  abandonoAsesor: number;                    // NEW
+  porcentajeAbandono: number;                // NEW
   conversacionesMenores3Min: number;
   porcentajeMenores3Min: number;
   tiempoEnLinea: string;

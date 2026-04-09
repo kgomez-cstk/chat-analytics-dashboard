@@ -61,7 +61,7 @@ const MasterDashboardPage: React.FC = () => {
   if (isLoading) return <LoadingDashboard />;
 
   return (
-    <Container maxW="7xl" py={{ base: 6, lg: 10 }} px={{ base: 4, lg: 10 }}>
+    <Container maxW="8xl" py={{ base: 6, lg: 10 }} px={{ base: 4, lg: 10 }}>
       <VStack spacing={8} align="stretch">
         {/* Page Header */}
         <Box>

@@ -67,22 +67,27 @@ const AdvisorTable: React.FC = () => {
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('nombre', {
-        header: 'Asesor Online'
+        header: 'Asesor',
+        cell: (info) => (
+          <Text fontSize="sm" fontWeight="medium" color="brand.onSurface">
+            {info.getValue()}
+          </Text>
+        ),
       }),
-      columnHelper.accessor('conversacionesAtendidasCerradas', {
-        header: 'Conv. Atendidas Totales',
+      columnHelper.accessor('clientesUnicos', {
+        header: 'Clientes únicos',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('conversacionesTotales', {
-        header: 'Conv. Totales',
+        header: 'Total de conversaciones',
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor('conversacionesMenores3Min', {
-        header: 'Conv. Únicas',
+      columnHelper.accessor('abandonoAsesor', {
+        header: 'Abandono por asesor',
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor('porcentajeMenores3Min', {
-        header: '% Conv. Masivas o Vinculadas',
+      columnHelper.accessor('porcentajeAbandono', {
+        header: '% de abandono',
         cell: (info) => {
           const val = info.getValue();
           let bgColor = 'green';
@@ -97,7 +102,7 @@ const AdvisorTable: React.FC = () => {
           }
 
           return (
-            <Flex justify="flex-end">
+            <Flex justify="center">
               <Badge
                 px={2.5}
                 py={0.5}
@@ -107,6 +112,8 @@ const AdvisorTable: React.FC = () => {
                 bg={bgColor}
                 color={textColor}
                 textTransform="none"
+                minW="60px"
+                textAlign="center"
               >
                 {val.toFixed(2)}%
               </Badge>
@@ -115,19 +122,19 @@ const AdvisorTable: React.FC = () => {
         },
       }),
       columnHelper.accessor('tiempoEnLinea', {
-        header: 'Tiempo en Línea',
+        header: 'Tiempo en línea',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('promedioDiarioLinea', {
-        header: 'Promedio Diario Horas en Línea',
+        header: 'Promedio tiempo en línea',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('tiempoEnPausa', {
-        header: 'Tiempo en Pausa',
+        header: 'Tiempo en pausa',
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('promedioDiarioPausa', {
-        header: 'Promedio Diario Pausa',
+        header: 'Promedio diario en pausa',
         cell: (info) => info.getValue(),
       }),
     ],
@@ -180,18 +187,18 @@ const AdvisorTable: React.FC = () => {
   const totals = useMemo(() => {
     const counts = data.reduce(
       (acc, curr) => ({
-        atendidas: acc.atendidas + curr.conversacionesAtendidasCerradas,
+        clientes: acc.clientes + curr.clientesUnicos,
         totales: acc.totales + curr.conversacionesTotales,
-        menores3: acc.menores3 + curr.conversacionesMenores3Min,
+        abandono: acc.abandono + curr.abandonoAsesor,
         secLinea: acc.secLinea + timeToSeconds(curr.tiempoEnLinea),
         secPromLinea: acc.secPromLinea + timeToSeconds(curr.promedioDiarioLinea),
         secPausa: acc.secPausa + timeToSeconds(curr.tiempoEnPausa),
         secPromPausa: acc.secPromPausa + timeToSeconds(curr.promedioDiarioPausa),
       }),
       {
-        atendidas: 0,
+        clientes: 0,
         totales: 0,
-        menores3: 0,
+        abandono: 0,
         secLinea: 0,
         secPromLinea: 0,
         secPausa: 0,
@@ -210,7 +217,7 @@ const AdvisorTable: React.FC = () => {
     };
   }, [data]);
 
-  const avgPercent = totals.totales > 0 ? (totals.menores3 / totals.totales) * 100 : 0;
+  const avgPercentAbandono = totals.totales > 0 ? (totals.abandono / totals.totales) * 100 : 0;
 
   return (
     <Box
@@ -289,11 +296,11 @@ const AdvisorTable: React.FC = () => {
               <Td colSpan={2} py={5} fontSize="sm">
                 TOTAL EQUIPO
               </Td>
-              <Td>{totals.atendidas}</Td>
+              <Td>{totals.clientes}</Td>
               <Td>{totals.totales}</Td>
-              <Td>{totals.menores3}</Td>
+              <Td>{totals.abandono}</Td>
               <Td>
-                {colorTotalEquipoPorcentaje(avgPercent)}
+                {colorTotalEquipoPorcentaje(avgPercentAbandono)}
               </Td>
               <Td>{totals.avgLinea}</Td>
               <Td>{totals.avgPromLinea}</Td>
