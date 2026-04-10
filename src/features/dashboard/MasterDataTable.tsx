@@ -22,6 +22,7 @@ const masterData = [
     label: 'Hyundai - Costa Rica',
     icon: 'chat',
     conv: '1,240',
+    clientes: '980',
     cola: '00:02:15',
     tme: '00:00:45',
     tmo: '00:08:30',
@@ -33,6 +34,7 @@ const masterData = [
     label: 'Att. General Hyundai CR',
     icon: 'build',
     conv: '850',
+    clientes: '620',
     cola: '00:01:50',
     tme: '00:00:30',
     tmo: '00:07:15',
@@ -43,6 +45,7 @@ const masterData = [
     type: 'user',
     label: 'Andrea Castrillón',
     conv: '124',
+    clientes: '85',
     cola: '00:01:10',
     tme: '00:00:25',
     tmo: '00:06:40',
@@ -53,6 +56,7 @@ const masterData = [
     type: 'user',
     label: 'Marcos Valenzuela',
     conv: '98',
+    clientes: '64',
     cola: '00:02:05',
     tme: '00:00:40',
     tmo: '00:07:55',
@@ -64,6 +68,7 @@ const masterData = [
     label: 'Ventas Hyundai Costa Rica',
     icon: 'build',
     conv: '390',
+    clientes: '280',
     cola: '00:03:40',
     tme: '00:01:15',
     tmo: '00:12:30',
@@ -75,6 +80,7 @@ const masterData = [
     label: 'Jeep Guatemala',
     icon: 'chat',
     conv: '540',
+    clientes: '420',
     cola: '00:01:05',
     tme: '00:00:20',
     tmo: '00:05:40',
@@ -117,22 +123,25 @@ const MasterDataTable: React.FC = () => {
               <Th px={6} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider">
                 Estructura Jerárquica (Canal / Skill / Usuario)
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+                Cant. Convensaciones
+              </Th>
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 Clientes Únicos
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 Tiempo en Cola
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 TME
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 TMO
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 TMA
               </Th>
-              <Th px={4} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
+              <Th px={3} py={4} fontSize="xs" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider" textAlign="center">
                 TMR
               </Th>
             </Tr>
@@ -179,12 +188,13 @@ const MasterDataTable: React.FC = () => {
                       </Text>
                     </Flex>
                   </Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" fontWeight={row.type !== 'user' ? 'bold' : 'normal'} color="gray.900" fontSize={row.type === 'user' ? 'sm' : 'md'}>{row.conv}</Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.cola}</Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tme}</Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tmo}</Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tma}</Td>
-                  <Td px={4} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tmr}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" fontWeight={row.type !== 'user' ? 'bold' : 'normal'} color="gray.900" fontSize={row.type === 'user' ? 'sm' : 'md'}>{row.conv}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" fontWeight={row.type !== 'user' ? 'bold' : 'normal'} color="gray.900" fontSize={row.type === 'user' ? 'sm' : 'md'}>{row.clientes}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.cola}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tme}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tmo}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tma}</Td>
+                  <Td px={3} py={row.type === 'canal' ? 4 : row.type === 'skill' ? 3 : 2} textAlign="center" color="gray.600" fontSize="sm">{row.tmr}</Td>
                 </Tr>
               );
             })}

@@ -16,6 +16,7 @@ const initialState: FilterState = {
   fechaInicio: today.inicio,
   fechaFin: today.fin,
   dateMode: 'dateonly',
+  queryMode: 'today',
 };
 
 const filtersSlice = createSlice({
@@ -52,6 +53,15 @@ const filtersSlice = createSlice({
     setDateMode(state, action: PayloadAction<'datetime' | 'dateonly'>) {
       state.dateMode = action.payload;
     },
+    setQueryMode(state, action: PayloadAction<'today' | 'range'>) {
+      state.queryMode = action.payload;
+      if (action.payload === 'range') {
+        // Default to Yesterday (Today - 1)
+        const yesterday = getFechasDia(-6 - 24); // -6 for offset, -24 for yesterday
+        state.fechaInicio = yesterday.inicio;
+        state.fechaFin = yesterday.fin;
+      }
+    },
     resetFilters() {
       const t = getFechasDia(-6);
       return {
@@ -65,6 +75,7 @@ const filtersSlice = createSlice({
         fechaInicio: t.inicio,
         fechaFin: t.fin,
         dateMode: 'dateonly' as const,
+        queryMode: 'today' as const,
       };
     },
   },
@@ -81,6 +92,7 @@ export const {
   setFechaInicio,
   setFechaFin,
   setDateMode,
+  setQueryMode,
   resetFilters,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

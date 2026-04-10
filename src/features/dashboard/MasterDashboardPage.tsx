@@ -21,8 +21,7 @@ import ReportGenerationCards from './ReportGenerationCards';
 import LoadingDashboard from '../../components/LoadingDashboard';
 import AdvisorTable from './AdvisorTable';
 import TiemposAtencionTable from './TiemposAtencionTable';
-import MetricCards from './MetricCards';
-import TiemposMetricCards from './TiemposMetricCards';
+import ConsolidatedMetrics from './ConsolidatedMetrics';
 import LoadDistributionCard from './LoadDistributionCard';
 
 const MasterDashboardPage: React.FC = () => {
@@ -83,6 +82,9 @@ const MasterDashboardPage: React.FC = () => {
         {/* Filters */}
         <FilterSection />
 
+        {/* Consolidated Analysis Metrics */}
+        <ConsolidatedMetrics />
+
         {/* Master Table */}
         <MasterDataTable />
 
@@ -96,7 +98,6 @@ const MasterDashboardPage: React.FC = () => {
               <Text fontFamily="heading" fontSize="xl" fontWeight="bold" color="gray.900" mb={4}>
                 Previsualización: Conversaciones
               </Text>
-              <MetricCards />
               <AdvisorTable />
               <Box mt={6} maxW="full">
                 <LoadDistributionCard />
@@ -109,7 +110,6 @@ const MasterDashboardPage: React.FC = () => {
               <Text fontFamily="heading" fontSize="xl" fontWeight="bold" color="gray.900" mb={4}>
                 Previsualización: Tiempos de Atención
               </Text>
-              <TiemposMetricCards />
               <TiemposAtencionTable />
               <Box mt={6} maxW="full">
                 <LoadDistributionCard />

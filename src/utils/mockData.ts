@@ -6,46 +6,45 @@ export const USE_MOCK = true;
 
 export const canalOptions: FilterOption[] = [
   { value: 'all', label: 'Todos los Canales' },
-  { value: 'inbound', label: 'Inbound' },
-  { value: 'outbound', label: 'Outbound' },
+  { value: 'Jeep Guatemala', label: 'Jeep Guatemala' },
+  { value: 'Hyundai - Costa Rica', label: 'Hyundai - Costa Rica' },
 ];
 
 export const skillOptions: FilterOption[] = [
-  { value: 'soporte', label: 'Soporte' },
-  { value: 'ventas', label: 'Ventas' },
-  { value: 'cobranza', label: 'Cobranza' },
-  { value: 'retencion', label: 'Retención' },
+  { value: 'Att. General Jeep GT', label: 'Att. General Jeep GT' },
+  { value: 'Att. General Hyundai CR', label: 'Att. General Hyundai CR' },
+  { value: 'Ventas Hyundai Costa Rica', label: 'Ventas Hyundai Costa Rica' },
 ];
 
 export const tipoUsuarioOptions: FilterOption[] = [
-  { value: 'asesor', label: 'Asesor' },
+  { value: 'operador', label: 'Operador' },
   { value: 'supervisor', label: 'Supervisor' },
-  { value: 'admin', label: 'Administrador' },
+  { value: 'Bot', label: 'Bot' },
 ];
 
 export const redSocialOptions: FilterOption[] = [
   { value: 1, label: 'WhatsApp' },
+  { value: 2, label: 'Facebook Comment' },
   { value: 2, label: 'Facebook Messenger' },
   { value: 3, label: 'Instagram' },
-  { value: 4, label: 'Telegram' },
   { value: 5, label: 'Web Chat' },
 ];
 
 export const gestionOptions: FilterOption[] = [
-  { value: 'info', label: 'Información General' },
-  { value: 'quejas', label: 'Quejas' },
-  { value: 'pagos', label: 'Pagos' },
-  { value: 'bajas', label: 'Bajas' },
+  { value: 'Consultas', label: 'Consultas' },
+  { value: 'Consultas', label: 'Consultas' },
+  { value: 'Derivacion Bot a Asesor', label: 'Derivacion Bot a Asesor' },
+  { value: 'Derivacion Asesor a Bot', label: 'Derivacion Asesor a Bot' },
 ];
 
 export const usuarioIniciaOptions: FilterOption[] = [
-  { value: 'u1', label: 'Carlos Mendoza' },
-  { value: 'u2', label: 'Lucia Torres' },
+  { value: 'u1', label: 'Andrea Castrillón' },
+  { value: 'u2', label: 'Marcos Valenzuela' },
 ];
 
 export const usuarioFinalizaOptions: FilterOption[] = [
-  { value: 'u3', label: 'Marta Gomez' },
-  { value: 'u4', label: 'Jorge Ruiz' },
+  { value: 'u3', label: 'Andrea Castrillón' },
+  { value: 'u4', label: 'Marcos Valenzuela' },
 ];
 
 // ─── Mock Metrics ───
@@ -204,14 +203,14 @@ export const mockPieChartData: ChartDataPoint[] = [
 ];
 
 export const mockTiemposAtencion: TiemposAtencionRow[] = [
-  { id: 1, nombre: 'Luis Alfredo Miranda Orozco', iniciales: 'LM', clientesUnicos: 85, cantidadConversaciones: 124, tiempoEnCola: '00:04:15', tma: '00:51:39', tmeOperador: '00:22:50', tmo: '00:36:40', tmr: '00:45:10' },
-  { id: 2, nombre: 'Alejandro Enrique Rivas Mendez', iniciales: 'AR', clientesUnicos: 92, cantidadConversaciones: 145, tiempoEnCola: '00:03:20', tma: '06:38:10', tmeOperador: '00:11:59', tmo: '00:36:17', tmr: '00:15:30' },
-  { id: 3, nombre: 'Amidia Leticia Rivas Torres', iniciales: 'AT', clientesUnicos: 78, cantidadConversaciones: 112, tiempoEnCola: '00:05:45', tma: '01:27:22', tmeOperador: '00:18:52', tmo: '00:27:41', tmr: '00:30:15' },
-  { id: 4, nombre: 'Ana Nohemy Lopez Cordero', iniciales: 'AL', clientesUnicos: 64, cantidadConversaciones: 98, tiempoEnCola: '00:02:10', tma: '01:42:40', tmeOperador: '00:45:14', tmo: '01:09:23', tmr: '00:50:20' },
-  { id: 5, nombre: 'Andrea Nicole Mejia Hurtado', iniciales: 'AM', clientesUnicos: 105, cantidadConversaciones: 156, tiempoEnCola: '00:06:30', tma: '01:06:24', tmeOperador: '00:27:50', tmo: '00:29:01', tmr: '00:20:10' },
-  { id: 6, nombre: 'Franchesculi Rafaelo Samayoa', iniciales: 'FS', clientesUnicos: 55, cantidadConversaciones: 82, tiempoEnCola: '00:01:50', tma: '00:40:13', tmeOperador: '00:07:21', tmo: '00:26:01', tmr: '00:12:45' },
-  { id: 7, nombre: 'Jennifer Michelle Campos Ayala', iniciales: 'JC', clientesUnicos: 88, cantidadConversaciones: 130, tiempoEnCola: '00:04:40', tma: '01:17:13', tmeOperador: '00:22:09', tmo: '00:26:39', tmr: '00:25:00' },
-  { id: 8, nombre: 'Jennifer Sofia Hernandez Sánchez', iniciales: 'JH', clientesUnicos: 72, cantidadConversaciones: 105, tiempoEnCola: '00:03:15', tma: '01:57:14', tmeOperador: '00:36:07', tmo: '00:43:53', tmr: '00:40:12' },
-  { id: 9, nombre: 'Jonathan Bladimir Linares Ardon', iniciales: 'JL', clientesUnicos: 95, cantidadConversaciones: 140, tiempoEnCola: '00:05:00', tma: '02:09:52', tmeOperador: '00:09:15', tmo: '00:39:00', tmr: '00:18:30' },
-  { id: 10, nombre: 'Julio Cesar Hernandez Servellon', iniciales: 'JH', clientesUnicos: 80, cantidadConversaciones: 118, tiempoEnCola: '00:02:40', tma: '01:26:10', tmeOperador: '00:03:51', tmo: '00:57:16', tmr: '00:12:05' },
+  { id: 1, nombre: 'Luis Alfredo Miranda Orozco', iniciales: 'LM', clientesUnicos: 85, abandonoAsesor: 8, porcentajeAbandono: 6.45, cantidadConversaciones: 124, tiempoEnCola: '00:04:15', tma: '00:51:39', tmeOperador: '00:22:50', tmo: '00:36:40', tmr: '00:45:10' },
+  { id: 2, nombre: 'Alejandro Enrique Rivas Mendez', iniciales: 'AR', clientesUnicos: 92, abandonoAsesor: 35, porcentajeAbandono: 24.14, cantidadConversaciones: 145, tiempoEnCola: '00:03:20', tma: '06:38:10', tmeOperador: '00:11:59', tmo: '00:36:17', tmr: '00:15:30' },
+  { id: 3, nombre: 'Amidia Leticia Rivas Torres', iniciales: 'AT', clientesUnicos: 78, abandonoAsesor: 15, porcentajeAbandono: 13.39, cantidadConversaciones: 112, tiempoEnCola: '00:05:45', tma: '01:27:22', tmeOperador: '00:18:52', tmo: '00:27:41', tmr: '00:30:15' },
+  { id: 4, nombre: 'Ana Nohemy Lopez Cordero', iniciales: 'AL', clientesUnicos: 64, abandonoAsesor: 20, porcentajeAbandono: 20.41, cantidadConversaciones: 98, tiempoEnCola: '00:02:10', tma: '01:42:40', tmeOperador: '00:45:14', tmo: '01:09:23', tmr: '00:50:20' },
+  { id: 5, nombre: 'Andrea Nicole Mejia Hurtado', iniciales: 'AM', clientesUnicos: 105, abandonoAsesor: 40, porcentajeAbandono: 25.64, cantidadConversaciones: 156, tiempoEnCola: '00:06:30', tma: '01:06:24', tmeOperador: '00:27:50', tmo: '00:29:01', tmr: '00:20:10' },
+  { id: 6, nombre: 'Franchesculi Rafaelo Samayoa', iniciales: 'FS', clientesUnicos: 55, abandonoAsesor: 5, porcentajeAbandono: 6.10, cantidadConversaciones: 82, tiempoEnCola: '00:01:50', tma: '00:40:13', tmeOperador: '00:07:21', tmo: '00:26:01', tmr: '00:12:45' },
+  { id: 7, nombre: 'Jennifer Michelle Campos Ayala', iniciales: 'JC', clientesUnicos: 88, abandonoAsesor: 22, porcentajeAbandono: 16.92, cantidadConversaciones: 130, tiempoEnCola: '00:04:40', tma: '01:17:13', tmeOperador: '00:22:09', tmo: '00:26:39', tmr: '00:25:00' },
+  { id: 8, nombre: 'Jennifer Sofia Hernandez Sánchez', iniciales: 'JH', clientesUnicos: 72, abandonoAsesor: 18, porcentajeAbandono: 17.14, cantidadConversaciones: 105, tiempoEnCola: '00:03:15', tma: '01:57:14', tmeOperador: '00:36:07', tmo: '00:43:53', tmr: '00:40:12' },
+  { id: 9, nombre: 'Jonathan Bladimir Linares Ardon', iniciales: 'JL', clientesUnicos: 95, abandonoAsesor: 12, porcentajeAbandono: 8.57, cantidadConversaciones: 140, tiempoEnCola: '00:05:00', tma: '02:09:52', tmeOperador: '00:09:15', tmo: '00:39:00', tmr: '00:18:30' },
+  { id: 10, nombre: 'Julio Cesar Hernandez Servellon', iniciales: 'JH', clientesUnicos: 80, abandonoAsesor: 25, porcentajeAbandono: 21.19, cantidadConversaciones: 118, tiempoEnCola: '00:02:40', tma: '01:26:10', tmeOperador: '00:03:51', tmo: '00:57:16', tmr: '00:12:05' },
 ];

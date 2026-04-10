@@ -38,6 +38,8 @@ export interface TiemposAtencionRow {
   nombre: string;
   iniciales: string;
   clientesUnicos: number;
+  abandonoAsesor: number;
+  porcentajeAbandono: number;
   cantidadConversaciones: number;
   tiempoEnCola: string;
   tma: string;
@@ -62,6 +64,7 @@ export interface FilterState {
   fechaInicio: string;
   fechaFin: string;
   dateMode: 'datetime' | 'dateonly';
+  queryMode: 'today' | 'range';
 }
 
 export interface SLAMetric {

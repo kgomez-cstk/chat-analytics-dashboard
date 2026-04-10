@@ -10,7 +10,6 @@ import {
   Td,
   Text,
   Flex,
-  Badge,
 } from '@chakra-ui/react';
 import {
   createColumnHelper,
@@ -88,38 +87,13 @@ const AdvisorTable: React.FC = () => {
       }),
       columnHelper.accessor('porcentajeAbandono', {
         header: '% de abandono',
-        cell: (info) => {
-          const val = info.getValue();
-          let bgColor = 'green';
-          let textColor = 'white';
-
-          if (val >= 80) {
-            bgColor = 'red';
-            textColor = 'white';
-          } else if (val > 60) {
-            bgColor = 'yellow';
-            textColor = 'black';
-          }
-
-          return (
-            <Flex justify="center">
-              <Badge
-                px={2.5}
-                py={0.5}
-                rounded="full"
-                fontSize="xs"
-                fontWeight="bold"
-                bg={bgColor}
-                color={textColor}
-                textTransform="none"
-                minW="60px"
-                textAlign="center"
-              >
-                {val.toFixed(2)}%
-              </Badge>
-            </Flex>
-          );
-        },
+        cell: (info) => (
+          <Flex justify="center">
+            <Text fontSize="sm">
+              {info.getValue().toFixed(2)}%
+            </Text>
+          </Flex>
+        ),
       }),
       columnHelper.accessor('tiempoEnLinea', {
         header: 'Tiempo en línea',
@@ -141,34 +115,6 @@ const AdvisorTable: React.FC = () => {
     []
   );
 
-  const colorTotalEquipoPorcentaje = (val: number) => {
-    let bgColor = 'green';
-    let textColor = 'white';
-    if (val >= 80) {
-      bgColor = 'red';
-      textColor = 'white';
-    } else if (val > 60) {
-      bgColor = 'yellow';
-      textColor = 'black';
-    }
-
-    return (
-      <Flex justify="flex-end">
-        <Badge
-          px={2.5}
-          py={0.5}
-          rounded="full"
-          fontSize="xs"
-          fontWeight="bold"
-          bg={bgColor}
-          color={textColor}
-          textTransform="none"
-        >
-          {val.toFixed(2)}%
-        </Badge>
-      </Flex>
-    );
-  };
 
   const pageSize = useAppSelector((state) => state.user.elmtPaginado);
 
@@ -241,17 +187,6 @@ const AdvisorTable: React.FC = () => {
         <Text fontFamily="heading" fontWeight="bold" color="brand.onSurface">
           Detalle por Asesor
         </Text>
-        <Flex gap={6}>
-          <Flex align="center" gap={1} fontSize="10px" fontWeight="bold">
-            <Box w={4} h={4} rounded="full" bg="green" /> ÓPTIMO
-          </Flex>
-          <Flex align="center" gap={1} fontSize="10px" fontWeight="bold">
-            <Box w={4} h={4} rounded="full" bg="yellow" /> MODERADO
-          </Flex>
-          <Flex align="center" gap={1} fontSize="10px" fontWeight="bold">
-            <Box w={4} h={4} rounded="full" bg="red" /> CRÍTICO
-          </Flex>
-        </Flex>
       </Flex>
 
       <Box overflowX="auto">
@@ -299,8 +234,8 @@ const AdvisorTable: React.FC = () => {
               <Td>{totals.clientes}</Td>
               <Td>{totals.totales}</Td>
               <Td>{totals.abandono}</Td>
-              <Td>
-                {colorTotalEquipoPorcentaje(avgPercentAbandono)}
+              <Td textAlign="center">
+                {avgPercentAbandono.toFixed(2)}%
               </Td>
               <Td>{totals.avgLinea}</Td>
               <Td>{totals.avgPromLinea}</Td>

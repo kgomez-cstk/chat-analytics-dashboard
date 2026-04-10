@@ -52,6 +52,14 @@ const TiemposAtencionTable: React.FC = () => {
         header: 'Clientes Únicos',
         cell: (info) => info.getValue(),
       }),
+      columnHelper.accessor('abandonoAsesor', {
+        header: 'Abandono Asesor',
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor('porcentajeAbandono', {
+        header: '% Abandono',
+        cell: (info) => `${info.getValue().toFixed(2)}%`,
+      }),
       columnHelper.accessor('cantidadConversaciones', {
         header: 'Cantidad de Conversaciones',
         cell: (info) => info.getValue(),
@@ -94,11 +102,15 @@ const TiemposAtencionTable: React.FC = () => {
 
   const totals = useMemo(() => {
     const totalClientes = data.reduce((sum, row) => sum + (row.clientesUnicos || 0), 0);
+    const totalAbandono = data.reduce((sum, row) => sum + (row.abandonoAsesor || 0), 0);
     const totalConversaciones = data.reduce((sum, row) => sum + (row.cantidadConversaciones || 0), 0);
+    const avgAbandonoPct = totalConversaciones > 0 ? (totalAbandono / totalConversaciones) * 100 : 0;
     
     // Dummy totals for now since values are formatted strings
     return {
       clientesUnicos: totalClientes,
+      abandonoAsesor: totalAbandono,
+      porcentajeAbandono: `${avgAbandonoPct.toFixed(2)}%`,
       cantidadConversaciones: totalConversaciones,
       tiempoEnCola: '00:03:52', // Dummy total/average
       tma: '01:57:12',
@@ -144,6 +156,12 @@ const TiemposAtencionTable: React.FC = () => {
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">Asesor</Th>
                <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
                 Clientes<br/>Únicos
+              </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                Abandono<br/>Asesor
+              </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                %<br/>Abandono
               </Th>
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
                 Cantidad de<br/>Conversaciones
@@ -197,6 +215,8 @@ const TiemposAtencionTable: React.FC = () => {
                 TOTAL EQUIPO
               </Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.clientesUnicos}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.abandonoAsesor}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.porcentajeAbandono}</Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.cantidadConversaciones}</Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tiempoEnCola}</Td>
               <Td textAlign="center" bg="purple.700" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tme}</Td>
