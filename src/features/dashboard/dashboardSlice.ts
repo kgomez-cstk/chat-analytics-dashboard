@@ -33,20 +33,43 @@ const initialState: DashboardState = {
 
 // ─── Async Thunk ──────────────────────────────────────────────────────────────
 
+/** Convierte una selección de FilterOption[] a IDs separados por coma, o undefined si está vacía. */
+const toIds = (opts: { value: string | number }[]): string | undefined =>
+  opts.length > 0 ? opts.map((o) => String(o.value)).join(',') : undefined;
+
+/**
+ * Extrae el valor numérico de tipo_usuario.
+ * El catálogo devuelve: 2=Todos, 1=Operador, -1=Bot.
+ * Si no hay selección o el valor es 2 (Todos) → undefined (omitir el param).
+ */
+const toTipoUsuario = (opts: { value: string | number }[]): number | undefined => {
+  if (opts.length === 0) return undefined;
+  const val = Number(opts[0].value);
+  return val === 2 ? undefined : val;
+};
+
 export const fetchDashboardHoy = createAsyncThunk(
   'dashboard/fetchDashboardHoy',
   async (_: void, { getState, signal }) => {
     const state    = getState() as RootState;
     const userData = state.user.userData;
+    const filters  = state.filters;
 
     if (!userData?.id_empresa || !userData?.url_api) {
       throw new Error('No se encontró id_empresa o url_api en el estado del usuario.');
     }
 
     const result = await fetchOperacionesHoy({
-      apiUrl:      userData.url_api,
-      idEmpresa:   userData.id_empresa,
-      offsetHoras: userData.offset_horas ?? 0,
+      apiUrl:        userData.url_api,
+      idEmpresa:     userData.id_empresa,
+      offsetHoras:   userData.offset_horas ?? 0,
+      tipoUsuario:    toTipoUsuario(filters.tipoUsuario),
+      canales:        toIds(filters.canal),
+      skills:         toIds(filters.skills),
+      redesSociales:  toIds(filters.redSocial),
+      gestiones:      toIds(filters.gestiones),
+      usuariosInicio: toIds(filters.usuarioInicia),
+      usuariosFin:    toIds(filters.usuarioFinaliza),
       signal,
     });
 

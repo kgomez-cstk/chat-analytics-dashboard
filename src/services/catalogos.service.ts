@@ -12,10 +12,10 @@ import type {
 // ─── Parámetros de contexto de usuario ───────────────────────────────────────
 
 export interface CatalogosParams {
-  apiUrl:    string;
+  apiUrl: string;
   idUsuario: number;
   idEmpresa: number;
-  signal?:   AbortSignal;
+  signal?: AbortSignal;
 }
 
 // ─── Helper: fetch genérico con validación de contrato ───────────────────────
@@ -112,19 +112,19 @@ export async function fetchOperadoresCatalog(
   );
   return data.map((item) => ({
     value: item.ID_USUARIO,
-    label: `${item.NOMBRE} ${item.APELLIDO}`.trim(),
+    label: item.NOMBRE_USUARIO,
   }));
 }
 
 // ─── Orquestador: carga todos los catálogos en paralelo ──────────────────────
 
 export interface AllCatalogos {
-  tipoUsuario:   FilterOption[];
-  canales:       FilterOption[];
-  skills:        FilterOption[];
+  tipoUsuario: FilterOption[];
+  canales: FilterOption[];
+  skills: FilterOption[];
   redesSociales: FilterOption[];
-  gestiones:     FilterOption[];
-  operadores:    FilterOption[];
+  gestiones: FilterOption[];
+  operadores: FilterOption[];
 }
 
 /**
@@ -166,12 +166,12 @@ export async function fetchAllCatalogos(
     .map((r) => (r.reason instanceof Error ? r.reason.message : String(r.reason)));
 
   return {
-    tipoUsuario:   resolve(tipoUsuarioResult),
-    canales:       resolve(canalesResult),
-    skills:        resolve(skillsResult),
+    tipoUsuario: resolve(tipoUsuarioResult),
+    canales: resolve(canalesResult),
+    skills: resolve(skillsResult),
     redesSociales: resolve(redesSocialesResult),
-    gestiones:     resolve(gestionesResult),
-    operadores:    resolve(operadoresResult),
+    gestiones: resolve(gestionesResult),
+    operadores: resolve(operadoresResult),
     errors,
   };
 }

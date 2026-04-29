@@ -2,26 +2,54 @@ import type {
   AdvisorRow,
   ChartDataPoint,
   FilterOption,
-  FilterOptions,
   LoadDistributionItem,
   MasterDataRow,
 } from '../types';
 import type { OperacionesHoyResponse, OperacionRow } from './operaciones.types';
 
-interface FetchOperacionesParams {
-  apiUrl: string;
-  idEmpresa: number;
-  offsetHoras: number;
-  signal?: AbortSignal;
+export interface FetchOperacionesParams {
+  apiUrl:        string;
+  idEmpresa:     number;
+  offsetHoras:   number;
+  // Filtros opcionales — omitir = "Todos" para ese filtro
+  tipoUsuario?:    number;   // 1=Operador, -1=Bot/IVR; omitir=Todos (no enviar si valor=2)
+  canales?:        string;   // IDs de BOT separados por coma
+  skills?:         string;   // IDs de SKILL separados por coma
+  redesSociales?:  string;   // IDs de RED_SOCIAL separados por coma
+  gestiones?:      string;   // IDs de TIPO_GESTION separados por coma
+  usuariosInicio?: string;   // IDs de ID_USUARIO_INICIO separados por coma
+  usuariosFin?:    string;   // IDs de ID_USUARIO (fin) separados por coma
+  signal?:         AbortSignal;
 }
 
 export async function fetchOperacionesHoy({
   apiUrl,
   idEmpresa,
   offsetHoras,
+  tipoUsuario,
+  canales,
+  skills,
+  redesSociales,
+  gestiones,
+  usuariosInicio,
+  usuariosFin,
   signal,
 }: FetchOperacionesParams): Promise<OperacionesHoyResponse> {
-  const url = `${apiUrl}/api/operaciones/hoy?id_empresa=${idEmpresa}&offset_horas=${offsetHoras}`;
+  const qs = new URLSearchParams({
+    id_empresa:   String(idEmpresa),
+    offset_horas: String(offsetHoras),
+  });
+  // tipo_usuario: solo enviar si es 1 (Operador) o -1 (Bot). Valor 2 = "Todos" → omitir.
+  if (tipoUsuario !== undefined && tipoUsuario !== 2)
+    qs.set('tipo_usuario',    String(tipoUsuario));
+  if (canales)        qs.set('canales',          canales);
+  if (skills)         qs.set('skills',           skills);
+  if (redesSociales)  qs.set('redes_sociales',   redesSociales);
+  if (gestiones)      qs.set('gestiones',        gestiones);
+  if (usuariosInicio) qs.set('usuarios_inicio',  usuariosInicio);
+  if (usuariosFin)    qs.set('usuarios_fin',     usuariosFin);
+
+  const url = `${apiUrl}/api/operaciones/hoy?${qs.toString()}`;
 
   const response = await fetch(url, { signal });
 
@@ -38,6 +66,18 @@ export async function fetchOperacionesHoy({
 
   return json;
 }
+
+// ─── Helper de abandono ───────────────────────────────────────────────────────
+
+/**
+ * Devuelve true si la conversación fue ABANDONADA por el asesor,
+ * es decir, no existe FECHA_HORA_PRIMER_MENSAJE_OPERADOR (null, undefined o "").
+ * Definición:
+ *   Abandono asesor  → cantidad de conversaciones sin respuesta del operador
+ *   % Abandono       → abandonoAsesor / cantidadConversaciones * 100
+ */
+const esAbandonada = (r: OperacionRow): boolean =>
+  !r.FECHA_HORA_PRIMER_MENSAJE_OPERADOR;
 
 // ─── Colores para distribución de carga ──────────────────────────────────────
 
@@ -67,13 +107,12 @@ export function mapToAdvisors(rows: OperacionRow[]): AdvisorRow[] {
 
   let id = 1;
   return Array.from(byUser.entries()).map(([nombre, userRows]) => {
-    const total = userRows.length;
+    const total         = userRows.length;
     const clientesUnicos = new Set(userRows.map((r) => r.CLIENTE)).size;
-    const conRespuesta = userRows.filter(
-      (r) => r.FECHA_HORA_PRIMER_MENSAJE_OPERADOR !== null
-    ).length;
-    const abandono = total - conRespuesta;
-    const menores3Min = userRows.filter(
+    // Abandono = conversaciones sin respuesta del operador (sin FECHA_HORA_PRIMER_MENSAJE_OPERADOR)
+    const abandono      = userRows.filter(esAbandonada).length;
+    const conRespuesta  = total - abandono;
+    const menores3Min   = userRows.filter(
       (r) => toSeconds(r.TMA) > 0 && toSeconds(r.TMA) < 180
     ).length;
 
@@ -270,12 +309,10 @@ export function mapToTiemposAtencion(rows: OperacionRow[]) {
 
   let id = 1;
   return Array.from(byUser.entries()).map(([nombre, userRows]) => {
-    const clientesUnicos = new Set(userRows.map((r) => r.CLIENTE)).size;
+    const clientesUnicos         = new Set(userRows.map((r) => r.CLIENTE)).size;
     const cantidadConversaciones = userRows.length;
-    const conRespuesta = userRows.filter(
-      (r) => r.FECHA_HORA_PRIMER_MENSAJE_OPERADOR !== null
-    ).length;
-    const abandono = cantidadConversaciones - conRespuesta;
+    // Abandono = conversaciones sin respuesta del operador (sin FECHA_HORA_PRIMER_MENSAJE_OPERADOR)
+    const abandono               = userRows.filter(esAbandonada).length;
 
     return {
       id: id++,
