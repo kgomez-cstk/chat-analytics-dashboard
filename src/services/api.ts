@@ -1,7 +1,7 @@
 import { USE_MOCK } from '../utils/mockData';
 import type { ApiResponse } from '../types';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.example.com';
+const BASE_URL = ''; // Se debe establecer mediante setBaseUrl tras recibir INIT por postMessage
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';

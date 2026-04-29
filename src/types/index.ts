@@ -13,6 +13,7 @@ export interface UserData {
   offset_horas: number;
   permisos: string[];
   elmtPaginado?: number;
+  url_api?: string;           // URL base del API backend, recibida por postMessage
 }
 
 export interface AdvisorRow {
@@ -114,10 +115,24 @@ export interface LoadDistributionItem {
   color: string;
 }
 
+export interface MasterDataRow {
+  type: 'canal' | 'skill' | 'user';
+  label: string;
+  icon?: string;
+  conv: number;
+  clientes: number;
+  cola: string;
+  tme: string;
+  tmo: string;
+  tma: string;
+  tmr: string;
+}
+
 export interface DashboardState {
   metrics: SLAMetric[];
   advisors: AdvisorRow[];
   tiemposAtencion: TiemposAtencionRow[];
+  masterData: MasterDataRow[];
   conversations: Conversation[];
   chartData: ChartDataPoint[];
   loadDistribution: LoadDistributionItem[];

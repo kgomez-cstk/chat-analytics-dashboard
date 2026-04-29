@@ -101,22 +101,38 @@ const TiemposAtencionTable: React.FC = () => {
   });
 
   const totals = useMemo(() => {
-    const totalClientes = data.reduce((sum, row) => sum + (row.clientesUnicos || 0), 0);
-    const totalAbandono = data.reduce((sum, row) => sum + (row.abandonoAsesor || 0), 0);
-    const totalConversaciones = data.reduce((sum, row) => sum + (row.cantidadConversaciones || 0), 0);
-    const avgAbandonoPct = totalConversaciones > 0 ? (totalAbandono / totalConversaciones) * 100 : 0;
-    
-    // Dummy totals for now since values are formatted strings
+    const totalClientes       = data.reduce((s, r) => s + (r.clientesUnicos || 0), 0);
+    const totalAbandono       = data.reduce((s, r) => s + (r.abandonoAsesor || 0), 0);
+    const totalConversaciones = data.reduce((s, r) => s + (r.cantidadConversaciones || 0), 0);
+    const avgAbandonoPct      = totalConversaciones > 0 ? (totalAbandono / totalConversaciones) * 100 : 0;
+
+    const hhmmssToSec = (v: string) => {
+      const p = v.split(':').map(Number);
+      return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : 0;
+    };
+    const secToHHMMSS = (s: number) => {
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = Math.floor(s % 60);
+      return [h, m, sec].map((v) => String(v).padStart(2, '0')).join(':');
+    };
+    const avgTime = (field: keyof typeof data[0]) => {
+      const valid = data.map((r) => r[field] as string).filter(Boolean);
+      if (!valid.length) return '00:00:00';
+      const total = valid.reduce((s, v) => s + hhmmssToSec(v), 0);
+      return secToHHMMSS(total / valid.length);
+    };
+
     return {
-      clientesUnicos: totalClientes,
-      abandonoAsesor: totalAbandono,
-      porcentajeAbandono: `${avgAbandonoPct.toFixed(2)}%`,
+      clientesUnicos:        totalClientes,
+      abandonoAsesor:        totalAbandono,
+      porcentajeAbandono:    `${avgAbandonoPct.toFixed(2)}%`,
       cantidadConversaciones: totalConversaciones,
-      tiempoEnCola: '00:03:52', // Dummy total/average
-      tma: '01:57:12',
-      tme: '00:21:01',
-      tmo: '00:35:25',
-      tmr: '00:28:40',
+      tiempoEnCola:          avgTime('tiempoEnCola'),
+      tma:                   avgTime('tma'),
+      tme:                   avgTime('tmeOperador'),
+      tmo:                   avgTime('tmo'),
+      tmr:                   avgTime('tmr'),
     };
   }, [data]);
 

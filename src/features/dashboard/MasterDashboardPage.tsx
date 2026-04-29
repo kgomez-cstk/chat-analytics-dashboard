@@ -1,20 +1,15 @@
-import React, { useEffect, useState, memo, useRef } from 'react';
+import React, { useEffect, useState, useCallback, memo, useRef } from 'react';
 import {
   Box,
   Heading,
   Text,
   VStack,
   Container,
+  useToast,
 } from '@chakra-ui/react';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { setDashboardData, setTiemposAtencion, setLoading } from './dashboardSlice';
-import {
-  mockMetrics,
-  mockAdvisors,
-  mockBarChartData,
-  mockLoadDistribution,
-  mockTiemposAtencion,
-} from '../../utils/mockData';
+import { fetchDashboardHoy } from './dashboardSlice';
+import { fetchCatalogos } from '../filters/catalogosSlice';
 import FilterSection from '../filters/FilterSection';
 import MasterDataTable from './MasterDataTable';
 import ReportGenerationCards from './ReportGenerationCards';
@@ -25,11 +20,25 @@ import ConsolidatedMetrics from './ConsolidatedMetrics';
 import LoadDistributionCard from './LoadDistributionCard';
 
 const MasterDashboardPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.dashboard.isLoading);
+  const dispatch      = useAppDispatch();
+  const toast         = useToast();
+  const isLoading     = useAppSelector((state) => state.dashboard.isLoading);
+  const error         = useAppSelector((state) => state.dashboard.error);
+  const catError      = useAppSelector((state) => state.catalogos.error);
+  const queryMode     = useAppSelector((state) => state.filters.queryMode);
+  const isInitialized = useAppSelector((state) => state.user.isInitialized);
+
   const [activeReport, setActiveReport] = useState<'conversaciones' | 'tiempos' | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  // ── Cargar catálogos una vez al recibir el postMessage de inicialización ──
+  useEffect(() => {
+    if (isInitialized) {
+      dispatch(fetchCatalogos());
+    }
+  }, [isInitialized, dispatch]);
+
+  // ── Scroll al preview cuando se selecciona un reporte ────────────────────
   useEffect(() => {
     if (activeReport && previewRef.current) {
       setTimeout(() => {
@@ -38,24 +47,54 @@ const MasterDashboardPage: React.FC = () => {
     }
   }, [activeReport]);
 
+  // ── Toast de error del dashboard ──────────────────────────────────────────
   useEffect(() => {
-    dispatch(setLoading(true));
-    // Simulate API fetch delay for all required data
-    const timer = setTimeout(() => {
-      dispatch(
-        setDashboardData({
-          metrics: mockMetrics,
-          advisors: mockAdvisors,
-          tiemposAtencion: mockTiemposAtencion,
-          chartData: mockBarChartData,
-          loadDistribution: mockLoadDistribution,
-        })
-      );
-      dispatch(setLoading(false));
-    }, 1000);
+    if (error) {
+      toast({
+        title: 'Error al cargar datos',
+        description: error,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    }
+  }, [error, toast]);
 
-    return () => clearTimeout(timer);
-  }, [dispatch, mockTiemposAtencion]);
+  // ── Toast de error de catálogos (parcial: algunos catálogos fallaron) ─────
+  useEffect(() => {
+    if (catError) {
+      toast({
+        title: 'Advertencia en catálogos',
+        description: catError,
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    }
+  }, [catError, toast]);
+
+  /**
+   * Botón BUSCAR:
+   *   - queryMode 'today'  → llama al API de operaciones
+   *   - queryMode 'range'  → pendiente de implementar
+   * NUNCA se auto-llama al inicializar; espera la acción explícita del usuario.
+   */
+  const handleBuscar = useCallback(() => {
+    if (queryMode === 'today') {
+      dispatch(fetchDashboardHoy());
+    } else {
+      toast({
+        title: 'Búsqueda por rango',
+        description: 'El filtro por rango de fechas está en desarrollo.',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    }
+  }, [dispatch, queryMode, toast]);
 
   if (isLoading) return <LoadingDashboard />;
 
@@ -80,7 +119,7 @@ const MasterDashboardPage: React.FC = () => {
         </Box>
 
         {/* Filters */}
-        <FilterSection />
+        <FilterSection onBuscar={handleBuscar} />
 
         {/* Consolidated Analysis Metrics */}
         <ConsolidatedMetrics />
