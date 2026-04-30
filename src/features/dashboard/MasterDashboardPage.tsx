@@ -82,19 +82,8 @@ const MasterDashboardPage: React.FC = () => {
    * NUNCA se auto-llama al inicializar; espera la acción explícita del usuario.
    */
   const handleBuscar = useCallback(() => {
-    if (queryMode === 'today') {
-      dispatch(fetchDashboardHoy());
-    } else {
-      toast({
-        title: 'Búsqueda por rango',
-        description: 'El filtro por rango de fechas está en desarrollo.',
-        status: 'info',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      });
-    }
-  }, [dispatch, queryMode, toast]);
+    dispatch(fetchDashboardHoy());
+  }, [dispatch]);
 
   if (isLoading) return <LoadingDashboard />;
 

@@ -11,6 +11,9 @@ export interface FetchOperacionesParams {
   apiUrl:        string;
   idEmpresa:     number;
   offsetHoras:   number;
+  queryMode?:    'today' | 'range';
+  fechaInicio?:  string; // YYYY-MM-DD
+  fechaFin?:     string; // YYYY-MM-DD
   // Filtros opcionales — omitir = "Todos" para ese filtro
   tipoUsuario?:    number;   // 1=Operador, -1=Bot/IVR; omitir=Todos (no enviar si valor=2)
   canales?:        string;   // IDs de BOT separados por coma
@@ -26,6 +29,9 @@ export async function fetchOperacionesHoy({
   apiUrl,
   idEmpresa,
   offsetHoras,
+  queryMode = 'today',
+  fechaInicio,
+  fechaFin,
   tipoUsuario,
   canales,
   skills,
@@ -37,8 +43,18 @@ export async function fetchOperacionesHoy({
 }: FetchOperacionesParams): Promise<OperacionesHoyResponse> {
   const qs = new URLSearchParams({
     id_empresa:   String(idEmpresa),
-    offset_horas: String(offsetHoras),
   });
+
+  let endpoint = '/api/operaciones/hoy';
+
+  if (queryMode === 'range' && fechaInicio && fechaFin) {
+    endpoint = '/api/operaciones/periodo';
+    qs.set('fecha_inicio', fechaInicio.substring(0, 10));
+    qs.set('fecha_fin', fechaFin.substring(0, 10));
+  } else {
+    qs.set('offset_horas', String(offsetHoras));
+  }
+
   // tipo_usuario: solo enviar si es 1 (Operador) o -1 (Bot). Valor 2 = "Todos" → omitir.
   if (tipoUsuario !== undefined && tipoUsuario !== 2)
     qs.set('tipo_usuario',    String(tipoUsuario));
@@ -49,7 +65,7 @@ export async function fetchOperacionesHoy({
   if (usuariosInicio) qs.set('usuarios_inicio',  usuariosInicio);
   if (usuariosFin)    qs.set('usuarios_fin',     usuariosFin);
 
-  const url = `${apiUrl}/api/operaciones/hoy?${qs.toString()}`;
+  const url = `${apiUrl}${endpoint}?${qs.toString()}`;
 
   const response = await fetch(url, { signal });
 

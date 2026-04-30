@@ -26,8 +26,9 @@ const SideNavBar: React.FC = () => {
   const activePage = useAppSelector((state) => state.user.activePage);
   const userData = useAppSelector((state) => state.user.userData);
 
-  const userName = userData ? `${userData.nombre}` : '';
+  const userName = userData?.nombre_usuario || '';
   const userRole = userData?.rol || '';
+  const nombreEmpresa = userData?.nombre_empresa || '';
 
   return (
     <Box
@@ -56,7 +57,7 @@ const SideNavBar: React.FC = () => {
           fontSize="xl"
           color="gray.900"
         >
-          Nombre Empresa
+          {nombreEmpresa}
         </Text>
         <Text
           fontFamily="body"

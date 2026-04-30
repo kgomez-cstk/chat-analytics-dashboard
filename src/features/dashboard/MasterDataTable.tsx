@@ -12,10 +12,16 @@ import {
   Th,
   Td,
   TableContainer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useToast,
 } from '@chakra-ui/react';
 import { MdDownload } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/useRedux';
 import type { MasterDataRow } from '../../types';
+import { exportToXLSX, exportToCSV } from '../../utils/exporters';
 
 // ─── Tipos internos ───────────────────────────────────────────────────────────
 
@@ -29,6 +35,32 @@ interface RowVM {
 
 const MasterDataTable: React.FC = () => {
   const masterData = useAppSelector((state) => state.dashboard.masterData);
+  const toast = useToast();
+
+  const handleExportMaster = (format: 'xlsx' | 'csv') => {
+    const columns = [
+      { accessorKey: 'type', header: 'Jerarquía (Canal/Skill/Usuario)' },
+      { accessorKey: 'label', header: 'Nombre' },
+      { accessorKey: 'conv', header: 'Cant. Conversaciones' },
+      { accessorKey: 'clientes', header: 'Clientes Únicos' },
+      { accessorKey: 'cola', header: 'Tiempo en Cola' },
+      { accessorKey: 'tme', header: 'TME' },
+      { accessorKey: 'tmo', header: 'TMO' },
+      { accessorKey: 'tma', header: 'TMA' },
+      { accessorKey: 'tmr', header: 'TMR' },
+    ];
+    
+    if (format === 'xlsx') {
+      const rowLevelFn = (row: MasterDataRow) => {
+        if (row.type === 'canal') return 0;
+        if (row.type === 'skill') return 1;
+        return 2;
+      };
+      exportToXLSX(masterData, columns, 'Tabla_Maestra', toast, undefined, undefined, rowLevelFn);
+    } else {
+      exportToCSV(masterData, columns, 'Tabla_Maestra', toast);
+    }
+  };
 
   // Conjuntos de labels colapsados (canal y skill con clave compuesta)
   const [collapsedCanals, setCollapsedCanals] = useState<Set<string>>(new Set());
@@ -118,14 +150,20 @@ const MasterDataTable: React.FC = () => {
           Tabla Maestra de Datos
         </Text>
         <Flex gap={2}>
-          <IconButton
-            aria-label="Exportar Excel"
-            icon={<Icon as={MdDownload} />}
-            variant="ghost"
-            color="gray.500"
-            _hover={{ bg: 'gray.100' }}
-            onClick={() => console.log('Exportar maestra...')}
-          />
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              aria-label="Exportar"
+              icon={<Icon as={MdDownload} />}
+              variant="ghost"
+              color="gray.500"
+              _hover={{ bg: 'gray.100' }}
+            />
+            <MenuList>
+              <MenuItem onClick={() => handleExportMaster('xlsx')}>Exportar a Excel</MenuItem>
+              <MenuItem onClick={() => handleExportMaster('csv')}>Exportar a CSV</MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
       </Flex>
 

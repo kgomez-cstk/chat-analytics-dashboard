@@ -6,9 +6,10 @@ import {
   SimpleGrid,
   Flex,
   Button,
+  useToast,
 } from '@chakra-ui/react';
 import { useAppSelector } from '../../hooks/useRedux';
-import { exportAdvisorsToExcel } from '../reports/exportExcel';
+import { exportToXLSX, exportToCSV } from '../../utils/exporters';
 
 interface ReportGenerationCardsProps {
   onPreview: (type: 'conversaciones' | 'tiempos' | null) => void;
@@ -17,7 +18,8 @@ interface ReportGenerationCardsProps {
 
 const ReportGenerationCards: React.FC<ReportGenerationCardsProps> = ({ onPreview, activeReport }) => {
   const advisors = useAppSelector((state) => state.dashboard.advisors);
-  const tiempos = useAppSelector((state) => state.dashboard.tiemposAtencion); // Make sure this is selected from correctly mapped state
+  const tiempos = useAppSelector((state) => state.dashboard.tiemposAtencion);
+  const toast = useToast();
 
   const handlePreview = (type: 'conversaciones' | 'tiempos') => {
     if (activeReport === type) {
@@ -27,13 +29,40 @@ const ReportGenerationCards: React.FC<ReportGenerationCardsProps> = ({ onPreview
     }
   };
 
-  const handleDownload = (type: 'conversaciones' | 'tiempos') => {
+  const handleDownload = (type: 'conversaciones' | 'tiempos', format: 'xlsx' | 'csv') => {
     if (type === 'conversaciones') {
-      exportAdvisorsToExcel(advisors);
+      const columns = [
+        { accessorKey: 'nombre', header: 'Nombre' },
+        { accessorKey: 'clientesUnicos', header: 'Clientes Únicos' },
+        { accessorKey: 'conversacionesAtendidasCerradas', header: 'Conversaciones Atendidas Cerradas' },
+        { accessorKey: 'conversacionesTotales', header: 'Conversaciones Totales' },
+        { accessorKey: 'conversacionesConRespuesta', header: 'Conversaciones Con Respuesta' },
+        { accessorKey: 'abandonoAsesor', header: 'Abandono Asesor' },
+        { accessorKey: 'porcentajeAbandono', header: '% Abandono' },
+        { accessorKey: 'conversacionesMenores3Min', header: 'Conversaciones < 3 Min' },
+        { accessorKey: 'porcentajeMenores3Min', header: '% Menores 3 Min' },
+        { accessorKey: 'tiempoEnLinea', header: 'Tiempo En Línea' },
+        { accessorKey: 'promedioDiarioLinea', header: 'Promedio Diario Línea' },
+        { accessorKey: 'tiempoEnPausa', header: 'Tiempo En Pausa' },
+        { accessorKey: 'promedioDiarioPausa', header: 'Promedio Diario Pausa' },
+      ];
+      if (format === 'xlsx') exportToXLSX(advisors, columns, 'Reporte_Conversaciones', toast);
+      else exportToCSV(advisors, columns, 'Reporte_Conversaciones', toast);
     } else {
-      // Assuming a similar export method exists for "tiempos"
-      // Wait, there might be, let me check via `exportTiemposToExcel(tiempos)` or something. Using a dummy log for now if it doesn't compile.
-      console.log('Descargando tiempos de atencion', tiempos);
+      const columns = [
+        { accessorKey: 'nombre', header: 'Nombre' },
+        { accessorKey: 'clientesUnicos', header: 'Clientes Únicos' },
+        { accessorKey: 'abandonoAsesor', header: 'Abandono Asesor' },
+        { accessorKey: 'porcentajeAbandono', header: '% Abandono' },
+        { accessorKey: 'cantidadConversaciones', header: 'Cantidad Conversaciones' },
+        { accessorKey: 'tiempoEnCola', header: 'Tiempo En Cola' },
+        { accessorKey: 'tma', header: 'TMA' },
+        { accessorKey: 'tmeOperador', header: 'TME Operador' },
+        { accessorKey: 'tmo', header: 'TMO' },
+        { accessorKey: 'tmr', header: 'TMR' },
+      ];
+      if (format === 'xlsx') exportToXLSX(tiempos, columns, 'Reporte_Tiempos_Atencion', toast);
+      else exportToCSV(tiempos, columns, 'Reporte_Tiempos_Atencion', toast);
     }
   };
 
@@ -89,20 +118,36 @@ const ReportGenerationCards: React.FC<ReportGenerationCardsProps> = ({ onPreview
             >
               {activeReport === 'tiempos' ? 'Ocultar Tabla' : 'Previsualizar Tabla'}
             </Button>
-            <Button
-              w="full"
-              py={6}
-              bg="gray.100"
-              color="gray.700"
-              _hover={{ bg: 'brand.primary', color: 'white' }}
-              fontWeight="bold"
-              rounded="lg"
-              transition="all 0.2s"
-              leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
-              onClick={() => handleDownload('tiempos')}
-            >
-              Descargar Excel
-            </Button>
+            <Flex gap={2}>
+              <Button
+                flex={1}
+                py={6}
+                bg="gray.100"
+                color="gray.700"
+                _hover={{ bg: 'brand.primary', color: 'white' }}
+                fontWeight="bold"
+                rounded="lg"
+                transition="all 0.2s"
+                leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
+                onClick={() => handleDownload('tiempos', 'xlsx')}
+              >
+                Excel
+              </Button>
+              <Button
+                flex={1}
+                py={6}
+                bg="gray.100"
+                color="gray.700"
+                _hover={{ bg: 'brand.primary', color: 'white' }}
+                fontWeight="bold"
+                rounded="lg"
+                transition="all 0.2s"
+                leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
+                onClick={() => handleDownload('tiempos', 'csv')}
+              >
+                CSV
+              </Button>
+            </Flex>
           </Flex>
         </Box>
 
@@ -152,20 +197,36 @@ const ReportGenerationCards: React.FC<ReportGenerationCardsProps> = ({ onPreview
             >
               {activeReport === 'conversaciones' ? 'Ocultar Tabla' : 'Previsualizar Tabla'}
             </Button>
-            <Button
-              w="full"
-              py={6}
-              bg="gray.100"
-              color="gray.700"
-              _hover={{ bg: 'brand.primary', color: 'white' }}
-              fontWeight="bold"
-              rounded="lg"
-              transition="all 0.2s"
-              leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
-              onClick={() => handleDownload('conversaciones')}
-            >
-              Descargar Excel
-            </Button>
+            <Flex gap={2}>
+              <Button
+                flex={1}
+                py={6}
+                bg="gray.100"
+                color="gray.700"
+                _hover={{ bg: 'brand.primary', color: 'white' }}
+                fontWeight="bold"
+                rounded="lg"
+                transition="all 0.2s"
+                leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
+                onClick={() => handleDownload('conversaciones', 'xlsx')}
+              >
+                Excel
+              </Button>
+              <Button
+                flex={1}
+                py={6}
+                bg="gray.100"
+                color="gray.700"
+                _hover={{ bg: 'brand.primary', color: 'white' }}
+                fontWeight="bold"
+                rounded="lg"
+                transition="all 0.2s"
+                leftIcon={<Box as="span" className="material-symbols-outlined">download</Box>}
+                onClick={() => handleDownload('conversaciones', 'csv')}
+              >
+                CSV
+              </Button>
+            </Flex>
           </Flex>
         </Box>
       </SimpleGrid>
