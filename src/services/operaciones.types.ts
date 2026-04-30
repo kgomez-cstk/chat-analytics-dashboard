@@ -1,5 +1,5 @@
 /**
- * Tipos de datos que devuelve GET /api/operaciones/hoy
+ * Tipos de datos que devuelve GET /operaciones/hoy
  */
 
 export interface OperacionRow {

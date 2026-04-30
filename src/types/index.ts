@@ -2,18 +2,22 @@
 
 export interface UserData {
   id_usuario: number;
-  nombre: string;
-  apellido: string;
-  rol: string;
-  token: string;
-  id_empresa: number;
-  nombre_empresa: string;
+  nombre?: string;
+  apellido?: string;
+  nombre_usuario?: string;
+  rol?: string;
+  token?: string;
+  id_empresa?: number;
+  nombre_empresa?: string;
   app_name: string;
   favicon_url: string;
   offset_horas: number;
   permisos: string[];
   elmtPaginado?: number;
-  url_api?: string;           // URL base del API backend, recibida por postMessage
+  elementosPagina?: number;
+  url_api?: string;
+  urlLogoHeader?: string;
+  apiToken?: string;
 }
 
 export interface AdvisorRow {

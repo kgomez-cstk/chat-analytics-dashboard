@@ -8,21 +8,21 @@ import type {
 import type { OperacionesHoyResponse, OperacionRow } from './operaciones.types';
 
 export interface FetchOperacionesParams {
-  apiUrl:        string;
-  idEmpresa:     number;
-  offsetHoras:   number;
-  queryMode?:    'today' | 'range';
-  fechaInicio?:  string; // YYYY-MM-DD
-  fechaFin?:     string; // YYYY-MM-DD
+  apiUrl: string;
+  idEmpresa: number;
+  offsetHoras: number;
+  queryMode?: 'today' | 'range';
+  fechaInicio?: string; // YYYY-MM-DD
+  fechaFin?: string; // YYYY-MM-DD
   // Filtros opcionales — omitir = "Todos" para ese filtro
-  tipoUsuario?:    number;   // 1=Operador, -1=Bot/IVR; omitir=Todos (no enviar si valor=2)
-  canales?:        string;   // IDs de BOT separados por coma
-  skills?:         string;   // IDs de SKILL separados por coma
-  redesSociales?:  string;   // IDs de RED_SOCIAL separados por coma
-  gestiones?:      string;   // IDs de TIPO_GESTION separados por coma
+  tipoUsuario?: number;   // 1=Operador, -1=Bot/IVR; omitir=Todos (no enviar si valor=2)
+  canales?: string;   // IDs de BOT separados por coma
+  skills?: string;   // IDs de SKILL separados por coma
+  redesSociales?: string;   // IDs de RED_SOCIAL separados por coma
+  gestiones?: string;   // IDs de TIPO_GESTION separados por coma
   usuariosInicio?: string;   // IDs de ID_USUARIO_INICIO separados por coma
-  usuariosFin?:    string;   // IDs de ID_USUARIO (fin) separados por coma
-  signal?:         AbortSignal;
+  usuariosFin?: string;   // IDs de ID_USUARIO (fin) separados por coma
+  signal?: AbortSignal;
 }
 
 export async function fetchOperacionesHoy({
@@ -42,13 +42,13 @@ export async function fetchOperacionesHoy({
   signal,
 }: FetchOperacionesParams): Promise<OperacionesHoyResponse> {
   const qs = new URLSearchParams({
-    id_empresa:   String(idEmpresa),
+    id_empresa: String(idEmpresa),
   });
 
-  let endpoint = '/api/operaciones/hoy';
+  let endpoint = '/operaciones/hoy';
 
   if (queryMode === 'range' && fechaInicio && fechaFin) {
-    endpoint = '/api/operaciones/periodo';
+    endpoint = '/operaciones/periodo';
     qs.set('fecha_inicio', fechaInicio.substring(0, 10));
     qs.set('fecha_fin', fechaFin.substring(0, 10));
   } else {
@@ -57,13 +57,13 @@ export async function fetchOperacionesHoy({
 
   // tipo_usuario: solo enviar si es 1 (Operador) o -1 (Bot). Valor 2 = "Todos" → omitir.
   if (tipoUsuario !== undefined && tipoUsuario !== 2)
-    qs.set('tipo_usuario',    String(tipoUsuario));
-  if (canales)        qs.set('canales',          canales);
-  if (skills)         qs.set('skills',           skills);
-  if (redesSociales)  qs.set('redes_sociales',   redesSociales);
-  if (gestiones)      qs.set('gestiones',        gestiones);
-  if (usuariosInicio) qs.set('usuarios_inicio',  usuariosInicio);
-  if (usuariosFin)    qs.set('usuarios_fin',     usuariosFin);
+    qs.set('tipo_usuario', String(tipoUsuario));
+  if (canales) qs.set('canales', canales);
+  if (skills) qs.set('skills', skills);
+  if (redesSociales) qs.set('redes_sociales', redesSociales);
+  if (gestiones) qs.set('gestiones', gestiones);
+  if (usuariosInicio) qs.set('usuarios_inicio', usuariosInicio);
+  if (usuariosFin) qs.set('usuarios_fin', usuariosFin);
 
   const url = `${apiUrl}${endpoint}?${qs.toString()}`;
 
@@ -123,12 +123,12 @@ export function mapToAdvisors(rows: OperacionRow[]): AdvisorRow[] {
 
   let id = 1;
   return Array.from(byUser.entries()).map(([nombre, userRows]) => {
-    const total         = userRows.length;
+    const total = userRows.length;
     const clientesUnicos = new Set(userRows.map((r) => r.CLIENTE)).size;
     // Abandono = conversaciones sin respuesta del operador (sin FECHA_HORA_PRIMER_MENSAJE_OPERADOR)
-    const abandono      = userRows.filter(esAbandonada).length;
-    const conRespuesta  = total - abandono;
-    const menores3Min   = userRows.filter(
+    const abandono = userRows.filter(esAbandonada).length;
+    const conRespuesta = total - abandono;
+    const menores3Min = userRows.filter(
       (r) => toSeconds(r.TMA) > 0 && toSeconds(r.TMA) < 180
     ).length;
 
@@ -325,10 +325,10 @@ export function mapToTiemposAtencion(rows: OperacionRow[]) {
 
   let id = 1;
   return Array.from(byUser.entries()).map(([nombre, userRows]) => {
-    const clientesUnicos         = new Set(userRows.map((r) => r.CLIENTE)).size;
+    const clientesUnicos = new Set(userRows.map((r) => r.CLIENTE)).size;
     const cantidadConversaciones = userRows.length;
     // Abandono = conversaciones sin respuesta del operador (sin FECHA_HORA_PRIMER_MENSAJE_OPERADOR)
-    const abandono               = userRows.filter(esAbandonada).length;
+    const abandono = userRows.filter(esAbandonada).length;
 
     return {
       id: id++,

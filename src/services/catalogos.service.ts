@@ -47,7 +47,7 @@ export async function fetchTipoUsuarioCatalog(
   signal?: AbortSignal
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<TipoUsuarioItem>(
-    `${apiUrl}/api/catalogos/tipo_usuario`,
+    `${apiUrl}/catalogos/tipo_usuario`,
     signal
   );
   return data.map((item) => ({ value: item.value, label: item.label }));
@@ -59,7 +59,7 @@ export async function fetchCanalesCatalog(
   { apiUrl, idUsuario, idEmpresa, signal }: CatalogosParams
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<CanalItem>(
-    `${apiUrl}/api/catalogos/canales?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/canales?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
     signal
   );
   return data.map((item) => ({ value: item.ID_BOT, label: item.DESCRIPCION }));
@@ -71,7 +71,7 @@ export async function fetchSkillsCatalog(
   { apiUrl, idUsuario, idEmpresa, signal }: CatalogosParams
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<SkillItem>(
-    `${apiUrl}/api/catalogos/skill?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/skill?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
     signal
   );
   return data.map((item) => ({ value: item.ID_SKILL, label: item.NOMBRE_SKILL }));
@@ -83,7 +83,7 @@ export async function fetchRedesSocialesCatalog(
   { apiUrl, idUsuario, idEmpresa, signal }: CatalogosParams
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<RedSocialItem>(
-    `${apiUrl}/api/catalogos/redes_sociales?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/redes_sociales?id_usuario=${idUsuario}&id_empresa=${idEmpresa}`,
     signal
   );
   return data.map((item) => ({ value: item.ID_RED_SOCIAL, label: item.NOMBRE }));
@@ -95,7 +95,7 @@ export async function fetchGestionesCatalog(
   { apiUrl, idEmpresa, signal }: Pick<CatalogosParams, 'apiUrl' | 'idEmpresa' | 'signal'>
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<GestionItem>(
-    `${apiUrl}/api/catalogos/gestiones?id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/gestiones?id_empresa=${idEmpresa}`,
     signal
   );
   return data.map((item) => ({ value: item.ID_TIPO_GESTION, label: item.GESTION }));
@@ -107,7 +107,7 @@ export async function fetchOperadoresCatalog(
   { apiUrl, idEmpresa, signal }: Pick<CatalogosParams, 'apiUrl' | 'idEmpresa' | 'signal'>
 ): Promise<FilterOption[]> {
   const data = await fetchCatalog<OperadorItem>(
-    `${apiUrl}/api/catalogos/operadores?id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/operadores?id_empresa=${idEmpresa}`,
     signal
   );
   return data.map((item) => ({

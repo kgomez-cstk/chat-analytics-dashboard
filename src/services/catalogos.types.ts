@@ -1,6 +1,6 @@
 /**
  * Contrato de respuesta común a todos los endpoints de catálogo:
- * GET /api/catalogos/*
+ * GET /catalogos/*
  */
 export interface CatalogResponse<T> {
   success: boolean;
@@ -9,19 +9,19 @@ export interface CatalogResponse<T> {
   message?: string;
 }
 
-// ─── Endpoint 1: GET /api/catalogos/tipo_usuario ──────────────────────────────
+// ─── Endpoint 1: GET /catalogos/tipo_usuario ──────────────────────────────
 export interface TipoUsuarioItem {
   label: string;
   value: number;    // 2=Todos, 1=Operador, -1=Bot
 }
 
-// ─── Endpoint 2: GET /api/catalogos/canales ───────────────────────────────────
+// ─── Endpoint 2: GET /catalogos/canales ───────────────────────────────────
 export interface CanalItem {
   ID_BOT: number;
   DESCRIPCION: string;
 }
 
-// ─── Endpoint 3: GET /api/catalogos/skill ────────────────────────────────────
+// ─── Endpoint 3: GET /catalogos/skill ────────────────────────────────────
 export interface SkillItem {
   ID_SKILL: number;
   ID_EMPRESA: number;
@@ -34,14 +34,14 @@ export interface SkillItem {
   MODIFICADO_EL: string | null;
 }
 
-// ─── Endpoint 4: GET /api/catalogos/redes_sociales ───────────────────────────
+// ─── Endpoint 4: GET /catalogos/redes_sociales ───────────────────────────
 export interface RedSocialItem {
   ID_RED_SOCIAL: number;
   NOMBRE: string;
   [key: string]: unknown;
 }
 
-// ─── Endpoint 5: GET /api/catalogos/gestiones ────────────────────────────────
+// ─── Endpoint 5: GET /catalogos/gestiones ────────────────────────────────
 export interface GestionItem {
   ID_TIPO_GESTION: number;
   GESTION: string;
@@ -51,7 +51,7 @@ export interface GestionItem {
   [key: string]: unknown;
 }
 
-// ─── Endpoint 6: GET /api/catalogos/operadores ───────────────────────────────
+// ─── Endpoint 6: GET /catalogos/operadores ───────────────────────────────
 export interface OperadorItem {
   ID_USUARIO: number;
   ID_EMPRESA: number;

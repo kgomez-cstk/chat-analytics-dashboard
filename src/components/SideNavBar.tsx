@@ -29,6 +29,7 @@ const SideNavBar: React.FC = () => {
   const userName = userData?.nombre_usuario || '';
   const userRole = userData?.rol || '';
   const nombreEmpresa = userData?.nombre_empresa || '';
+  const urlLogoHeader = userData?.urlLogoHeader || '';
 
   return (
     <Box
@@ -49,7 +50,7 @@ const SideNavBar: React.FC = () => {
           alt="User Profile Avatar"
           w={75}
           h={75}
-          src="https://cdn.talkme.pro/personalizacion/TalkMe/consola/menu_lateral.svg"
+          src={urlLogoHeader || ""}
         />
         <Text
           fontFamily="heading"
@@ -124,7 +125,7 @@ const SideNavBar: React.FC = () => {
             rounded="full"
             border="1px solid"
             borderColor="brand.outlineVariant"
-            src="https://cdn.talkme.pro/personalizacion/TalkMe/consola/menu_lateral.svg"
+            src={urlLogoHeader || ""}
             fallback={
               <Flex
                 w={10}

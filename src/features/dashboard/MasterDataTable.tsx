@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useMemo } from 'react';
+import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -17,6 +17,7 @@ import {
   MenuList,
   MenuItem,
   useToast,
+  Button,
 } from '@chakra-ui/react';
 import { MdDownload } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/useRedux';
@@ -35,7 +36,18 @@ interface RowVM {
 
 const MasterDataTable: React.FC = () => {
   const masterData = useAppSelector((state) => state.dashboard.masterData);
+  const userData = useAppSelector((state) => state.user.userData);
   const toast = useToast();
+
+  const rawElements = userData?.elementosPagina ?? userData?.elmtPaginado ?? 20;
+  const elementsPerPage = rawElements < 1 ? 20 : rawElements;
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Volver a la página 1 cuando cambien los datos
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [masterData]);
 
   const handleExportMaster = (format: 'xlsx' | 'csv') => {
     const columns = [
@@ -82,50 +94,118 @@ const MasterDataTable: React.FC = () => {
     });
   }, []);
 
-  /**
-   * Recorre el array plano manteniendo contexto de canal/skill actual.
-   * - Omite filas hijas cuando su padre está colapsado.
-   * - Adjunta estado de colapso y callback de toggle a cada fila visible.
-   */
-  const visibleRows = useMemo<RowVM[]>(() => {
-    let currentCanal    = '';
+  const totalPages = Math.ceil(masterData.length / elementsPerPage) || 1;
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const renderRows = useMemo<RowVM[]>(() => {
+    const start = (currentPage - 1) * elementsPerPage;
+    const paginatedRaw = masterData.slice(start, start + elementsPerPage);
+    
+    const rows: RowVM[] = [];
+    if (paginatedRaw.length === 0) return rows;
+
+    let currentCanal = '';
     let currentSkillKey = '';
-    const result: RowVM[] = [];
 
-    for (const row of masterData) {
-      if (row.type === 'canal') {
-        currentCanal    = row.label;
-        currentSkillKey = '';
-        const isCollapsed = collapsedCanals.has(row.label);
-        const label = row.label;
-        result.push({
-          row,
-          isCollapsed,
-          onToggle: () => toggleCanal(label),
-        });
+    // 1. Determinar el contexto (padres) de la fila inicial buscando hacia atrás
+    let contextCanalRow: MasterDataRow | null = null;
+    let contextSkillRow: MasterDataRow | null = null;
 
-      } else if (row.type === 'skill') {
-        // Ocultar si el canal padre está colapsado
-        if (collapsedCanals.has(currentCanal)) continue;
-        currentSkillKey  = `${currentCanal}::${row.label}`;
-        const isCollapsed = collapsedSkills.has(currentSkillKey);
-        const skillKey   = currentSkillKey;
-        result.push({
-          row,
-          isCollapsed,
-          onToggle: () => toggleSkill(skillKey),
-        });
-
-      } else {
-        // user — ocultar si canal o skill padre están colapsados
-        if (collapsedCanals.has(currentCanal))    continue;
-        if (collapsedSkills.has(currentSkillKey)) continue;
-        result.push({ row, isCollapsed: false });
+    for (let i = 0; i < start; i++) {
+      if (masterData[i].type === 'canal') {
+        contextCanalRow = masterData[i];
+        contextSkillRow = null;
+      } else if (masterData[i].type === 'skill') {
+        contextSkillRow = masterData[i];
       }
     }
 
-    return result;
-  }, [masterData, collapsedCanals, collapsedSkills, toggleCanal, toggleSkill]);
+    const firstItem = paginatedRaw[0];
+
+    // 2. Inyectar contexto si es necesario
+    if (firstItem.type === 'skill' && contextCanalRow) {
+      currentCanal = contextCanalRow.label;
+      const isCollapsed = collapsedCanals.has(contextCanalRow.label);
+      rows.push({
+        row: contextCanalRow,
+        isCollapsed,
+        onToggle: () => toggleCanal(contextCanalRow!.label),
+      });
+    } else if (firstItem.type === 'user' && contextCanalRow) {
+      currentCanal = contextCanalRow.label;
+      const canalCollapsed = collapsedCanals.has(contextCanalRow.label);
+      rows.push({
+        row: contextCanalRow,
+        isCollapsed: canalCollapsed,
+        onToggle: () => toggleCanal(contextCanalRow!.label),
+      });
+
+      if (!canalCollapsed && contextSkillRow) {
+        currentSkillKey = `${currentCanal}::${contextSkillRow.label}`;
+        const skillCollapsed = collapsedSkills.has(currentSkillKey);
+        rows.push({
+          row: contextSkillRow,
+          isCollapsed: skillCollapsed,
+          onToggle: () => toggleSkill(currentSkillKey),
+        });
+      }
+    }
+
+    // 3. Procesar las filas de la página actual
+    for (const row of paginatedRaw) {
+      if (row.type === 'canal') {
+        currentCanal = row.label;
+        currentSkillKey = '';
+        const isCollapsed = collapsedCanals.has(row.label);
+        rows.push({
+          row,
+          isCollapsed,
+          onToggle: () => toggleCanal(row.label),
+        });
+      } else if (row.type === 'skill') {
+        if (collapsedCanals.has(currentCanal)) continue;
+        currentSkillKey = `${currentCanal}::${row.label}`;
+        const isCollapsed = collapsedSkills.has(currentSkillKey);
+        rows.push({
+          row,
+          isCollapsed,
+          onToggle: () => toggleSkill(currentSkillKey),
+        });
+      } else {
+        // user
+        if (collapsedCanals.has(currentCanal)) continue;
+        if (collapsedSkills.has(currentSkillKey)) continue;
+        rows.push({ row, isCollapsed: false });
+      }
+    }
+
+    // 4. Eliminar agrupadores huérfanos al final de la página (si fueron cortados por la paginación)
+    const nextItem = masterData[start + elementsPerPage];
+    if (nextItem) {
+      while (rows.length > 0) {
+        const lastRow = rows[rows.length - 1].row;
+        if (lastRow.type === 'user') break;
+        
+        // Si el último es un skill y el siguiente elemento real es un usuario (su hijo), el skill quedó cortado
+        if (lastRow.type === 'skill' && nextItem.type === 'user') {
+          rows.pop();
+        } 
+        // Si el último es un canal y el siguiente es un skill o usuario (sus hijos), el canal quedó cortado
+        else if (lastRow.type === 'canal' && (nextItem.type === 'skill' || nextItem.type === 'user')) {
+          rows.pop();
+        } else {
+          break;
+        }
+      }
+    }
+
+    return rows;
+  }, [masterData, currentPage, elementsPerPage, collapsedCanals, collapsedSkills, toggleCanal, toggleSkill]);
 
   return (
     <Box
@@ -203,9 +283,9 @@ const MasterDataTable: React.FC = () => {
                 </Td>
               </Tr>
             ) : (
-              visibleRows.map(({ row, isCollapsed, onToggle }, idx) => (
+              renderRows.map(({ row, isCollapsed, onToggle }, idx) => (
                 <MasterRow
-                  key={idx}
+                  key={`${row.type}-${row.label}-${idx}`}
                   row={row}
                   isCollapsed={isCollapsed}
                   onToggle={onToggle}
@@ -216,7 +296,7 @@ const MasterDataTable: React.FC = () => {
         </Table>
       </TableContainer>
 
-      {/* Footer */}
+      {/* Footer y Paginación */}
       <Flex
         px={6} py={4}
         bg="gray.50"
@@ -224,12 +304,40 @@ const MasterDataTable: React.FC = () => {
         borderColor="blackAlpha.100"
         justify="space-between"
         align="center"
+        flexWrap="wrap"
+        gap={4}
       >
         <Text fontSize="xs" color="gray.500" fontWeight="medium">
           {masterData.length > 0
-            ? `${visibleRows.length} de ${masterData.length} registros visibles`
+            ? `Mostrando página ${currentPage} de ${totalPages} (Total datos: ${masterData.length})`
             : 'Sin datos cargados'}
         </Text>
+
+        {masterData.length > 0 && (
+          <Flex gap={2} align="center">
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              isDisabled={currentPage === 1}
+              colorScheme="blue"
+              variant="outline"
+            >
+              Anterior
+            </Button>
+            <Text fontSize="sm" fontWeight="medium" color="gray.700" mx={2}>
+              Página {currentPage} de {totalPages}
+            </Text>
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              isDisabled={currentPage === totalPages}
+              colorScheme="blue"
+              variant="outline"
+            >
+              Siguiente
+            </Button>
+          </Flex>
+        )}
       </Flex>
     </Box>
   );
