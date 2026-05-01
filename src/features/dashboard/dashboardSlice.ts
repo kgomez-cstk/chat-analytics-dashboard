@@ -38,6 +38,19 @@ const toIds = (opts: { value: string | number }[]): string | undefined =>
   opts.length > 0 ? opts.map((o) => String(o.value)).join(',') : undefined;
 
 /**
+ * Para Skills: si no hay ninguna seleccionada usa TODAS las opciones del catálogo.
+ * Esto garantiza que el API filtre solo por los skills disponibles para el usuario
+ * en lugar de omitir el parámetro (lo que devolvería todos los skills del sistema).
+ */
+const toSkillIds = (
+  selected: { value: string | number }[],
+  allOptions: { value: string | number }[],
+): string | undefined => {
+  const source = selected.length > 0 ? selected : allOptions;
+  return toIds(source);
+};
+
+/**
  * Extrae el valor numérico de tipo_usuario.
  * El catálogo devuelve: 2=Todos, 1=Operador, -1=Bot.
  * Si no hay selección o el valor es 2 (Todos) → undefined (omitir el param).
@@ -59,6 +72,8 @@ export const fetchDashboardHoy = createAsyncThunk(
       throw new Error('No se encontró id_empresa o url_api en el estado del usuario.');
     }
 
+    const catalogos = state.catalogos;
+
     const result = await fetchOperacionesHoy({
       apiUrl:        userData.url_api,
       idEmpresa:     userData.id_empresa,
@@ -68,7 +83,7 @@ export const fetchDashboardHoy = createAsyncThunk(
       fechaFin:      filters.fechaFin,
       tipoUsuario:    toTipoUsuario(filters.tipoUsuario),
       canales:        toIds(filters.canal),
-      skills:         toIds(filters.skills),
+      skills:         toSkillIds(filters.skills, catalogos.skills),
       redesSociales:  toIds(filters.redSocial),
       gestiones:      toIds(filters.gestiones),
       usuariosInicio: toIds(filters.usuarioInicia),
