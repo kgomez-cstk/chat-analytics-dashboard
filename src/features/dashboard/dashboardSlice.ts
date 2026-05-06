@@ -17,6 +17,14 @@ import {
   mapToLoadDistribution,
   mapToChartData,
 } from '../../services/operaciones.service';
+import {
+  fetchOperacionesResumen,
+  mapResumenToAdvisors,
+  mapResumenToTiemposAtencion,
+  mapResumenToMasterData,
+  mapResumenToLoadDistribution,
+  mapResumenToChartData,
+} from '../../services/resumen.service';
 import type { RootState } from '../../app/store';
 
 const initialState: DashboardState = {
@@ -103,6 +111,53 @@ export const fetchDashboardHoy = createAsyncThunk(
   }
 );
 
+/**
+ * Thunk para el endpoint /operaciones/resumen.
+ * Solo se activa en queryMode 'range' + periodoSource 'resumen'.
+ * Consume filas pre-agregadas del batch: no realiza ninguna agregación extra,
+ * simplemente las transforma al mismo formato de tipos que usa el dashboard.
+ */
+export const fetchDashboardResumen = createAsyncThunk(
+  'dashboard/fetchDashboardResumen',
+  async (_: void, { getState, signal }) => {
+    const state    = getState() as RootState;
+    const userData = state.user.userData;
+    const filters  = state.filters;
+
+    if (!userData?.id_empresa || !userData?.url_api) {
+      throw new Error('No se encontró id_empresa o url_api en el estado del usuario.');
+    }
+
+    const catalogos = state.catalogos;
+
+    const result = await fetchOperacionesResumen({
+      apiUrl:        userData.url_api,
+      idEmpresa:     userData.id_empresa,
+      offsetHoras:   userData.offset_horas ?? 0,
+      fechaInicio:   filters.fechaInicio,
+      fechaFin:      filters.fechaFin,
+      tipoUsuario:    toTipoUsuario(filters.tipoUsuario),
+      canales:        toIds(filters.canal),
+      skills:         toSkillIds(filters.skills, catalogos.skills),
+      redesSociales:  toIds(filters.redSocial),
+      gestiones:      toIds(filters.gestiones),
+      usuariosInicio: toIds(filters.usuarioInicia),
+      usuariosFin:    toIds(filters.usuarioFinaliza),
+      signal,
+    });
+
+    const rows = result.data;
+
+    return {
+      tiemposAtencion:  mapResumenToTiemposAtencion(rows),
+      advisors:         mapResumenToAdvisors(rows),
+      masterData:       mapResumenToMasterData(rows),
+      loadDistribution: mapResumenToLoadDistribution(rows),
+      chartData:        mapResumenToChartData(rows),
+    };
+  }
+);
+
 // ─── Slice ────────────────────────────────────────────────────────────────────
 
 const dashboardSlice = createSlice({
@@ -171,6 +226,26 @@ const dashboardSlice = createSlice({
         state.error            = null;
       })
       .addCase(fetchDashboardHoy.rejected, (state, action) => {
+        state.isLoading = false;
+        if (action.error.name !== 'AbortError') {
+          state.error = action.error.message ?? 'Error al cargar datos';
+        }
+      })
+      // ── Resumen (endpoint pre-agregado del batch) ──────────────────────────
+      .addCase(fetchDashboardResumen.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchDashboardResumen.fulfilled, (state, action) => {
+        state.tiemposAtencion  = action.payload.tiemposAtencion;
+        state.advisors         = action.payload.advisors;
+        state.masterData       = action.payload.masterData;
+        state.loadDistribution = action.payload.loadDistribution;
+        state.chartData        = action.payload.chartData;
+        state.isLoading        = false;
+        state.error            = null;
+      })
+      .addCase(fetchDashboardResumen.rejected, (state, action) => {
         state.isLoading = false;
         if (action.error.name !== 'AbortError') {
           state.error = action.error.message ?? 'Error al cargar datos';

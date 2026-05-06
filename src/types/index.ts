@@ -70,6 +70,8 @@ export interface FilterState {
   fechaFin: string;
   dateMode: 'datetime' | 'dateonly';
   queryMode: 'today' | 'range';
+  /** Solo aplica cuando queryMode === 'range': fuente del endpoint a consultar. */
+  periodoSource: 'periodo' | 'resumen';
 }
 
 export interface SLAMetric {

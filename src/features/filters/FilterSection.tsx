@@ -17,7 +17,7 @@ import {
   type GroupBase,
   type ValueContainerProps,
 } from 'chakra-react-select';
-import { MdCalendarToday, MdSearch, MdFilterAltOff } from 'react-icons/md';
+import { MdCalendarToday, MdSearch, MdFilterAltOff, MdCompareArrows } from 'react-icons/md';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import {
   setCanal,
@@ -30,6 +30,7 @@ import {
   setFechaInicio,
   setFechaFin,
   setQueryMode,
+  setPeriodoSource,
   resetFilters,
 } from './filtersSlice';
 import type { FilterOption } from '../../types';
@@ -367,6 +368,51 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onBuscar }) => {
           >
             Limpiar Filtros
           </Button>
+
+          {/* Toggle Periodo / Resumen — solo visible en modo Rango */}
+          {filters.queryMode === 'range' && (
+            <Box
+              bg="brand.surfaceContainerLowest"
+              border="1px solid"
+              borderColor="brand.outlineVariant"
+              rounded="lg"
+              p={1.5}
+              shadow="sm"
+            >
+              <Flex align="center" gap={1} mb={1}>
+                <Icon as={MdCompareArrows} fontSize="xs" color="brand.onSurfaceVariant" />
+                <Text fontSize="9px" fontWeight="bold" color="brand.onSurfaceVariant" textTransform="uppercase" letterSpacing="wider">
+                  Fuente de datos
+                </Text>
+              </Flex>
+              <Flex
+                bg="brand.surfaceContainerLow"
+                p={0.5}
+                rounded="md"
+                border="1px solid"
+                borderColor="brand.outlineVariant"
+              >
+                <Button
+                  size="xs" px={2} flex={1}
+                  variant={filters.periodoSource === 'periodo' ? 'solid' : 'ghost'}
+                  colorScheme={filters.periodoSource === 'periodo' ? 'blue' : 'gray'}
+                  onClick={() => dispatch(setPeriodoSource('periodo'))}
+                  fontSize="9px" h="20px"
+                >
+                  Periodo
+                </Button>
+                <Button
+                  size="xs" px={2} flex={1}
+                  variant={filters.periodoSource === 'resumen' ? 'solid' : 'ghost'}
+                  colorScheme={filters.periodoSource === 'resumen' ? 'teal' : 'gray'}
+                  onClick={() => dispatch(setPeriodoSource('resumen'))}
+                  fontSize="9px" h="20px"
+                >
+                  Resumen
+                </Button>
+              </Flex>
+            </Box>
+          )}
         </VStack>
       </Flex>
     </Box>

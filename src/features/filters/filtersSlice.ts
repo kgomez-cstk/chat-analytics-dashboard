@@ -17,6 +17,7 @@ const initialState: FilterState = {
   fechaFin: today.fin,
   dateMode: 'dateonly',
   queryMode: 'today',
+  periodoSource: 'periodo',
 };
 
 const filtersSlice = createSlice({
@@ -62,6 +63,9 @@ const filtersSlice = createSlice({
         state.fechaFin = yesterday.fin;
       }
     },
+    setPeriodoSource(state, action: PayloadAction<'periodo' | 'resumen'>) {
+      state.periodoSource = action.payload;
+    },
     resetFilters() {
       const t = getFechasDia(-6);
       return {
@@ -76,6 +80,7 @@ const filtersSlice = createSlice({
         fechaFin: t.fin,
         dateMode: 'dateonly' as const,
         queryMode: 'today' as const,
+        periodoSource: 'periodo' as const,
       };
     },
   },
@@ -93,6 +98,7 @@ export const {
   setFechaFin,
   setDateMode,
   setQueryMode,
+  setPeriodoSource,
   resetFilters,
 } = filtersSlice.actions;
 export default filtersSlice.reducer;

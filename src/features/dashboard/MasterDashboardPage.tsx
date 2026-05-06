@@ -8,7 +8,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { fetchDashboardHoy } from './dashboardSlice';
+import { fetchDashboardHoy, fetchDashboardResumen } from './dashboardSlice';
 import { fetchCatalogos } from '../filters/catalogosSlice';
 import FilterSection from '../filters/FilterSection';
 import MasterDataTable from './MasterDataTable';
@@ -27,6 +27,8 @@ const MasterDashboardPage: React.FC = () => {
   const catError      = useAppSelector((state) => state.catalogos.error);
   const queryMode     = useAppSelector((state) => state.filters.queryMode);
   const isInitialized = useAppSelector((state) => state.user.isInitialized);
+
+  const periodoSource = useAppSelector((state) => state.filters.periodoSource);
 
   const [activeReport, setActiveReport] = useState<'conversaciones' | 'tiempos' | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -77,13 +79,19 @@ const MasterDashboardPage: React.FC = () => {
 
   /**
    * Botón BUSCAR:
-   *   - queryMode 'today'  → llama al API de operaciones
-   *   - queryMode 'range'  → pendiente de implementar
+   *   - queryMode 'today'              → /operaciones/hoy   (datos en tiempo real)
+   *   - queryMode 'range' + 'periodo'  → /operaciones/periodo (una fila por conversación)
+   *   - queryMode 'range' + 'resumen'  → /operaciones/resumen  (filas pre-agregadas del batch)
+   *
    * NUNCA se auto-llama al inicializar; espera la acción explícita del usuario.
    */
   const handleBuscar = useCallback(() => {
-    dispatch(fetchDashboardHoy());
-  }, [dispatch]);
+    if (queryMode === 'range' && periodoSource === 'resumen') {
+      dispatch(fetchDashboardResumen());
+    } else {
+      dispatch(fetchDashboardHoy());
+    }
+  }, [dispatch, queryMode, periodoSource]);
 
   if (isLoading) return <LoadingDashboard />;
 

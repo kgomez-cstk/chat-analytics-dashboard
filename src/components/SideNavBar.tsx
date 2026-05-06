@@ -46,12 +46,14 @@ const SideNavBar: React.FC = () => {
     >
       {/* Logo / Branding */}
       <Box px={6} py={8}>
-        <Image
-          alt="User Profile Avatar"
-          w={75}
-          h={75}
-          src={urlLogoHeader || ""}
-        />
+        {urlLogoHeader && (
+          <Image
+            alt="User Profile Avatar"
+            w={75}
+            h={75}
+            src={urlLogoHeader}
+          />
+        )}
         <Text
           fontFamily="heading"
           fontWeight="bold"
