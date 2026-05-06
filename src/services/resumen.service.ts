@@ -60,6 +60,8 @@ export interface ResumenResponse {
   fInicio: string;
   fFin: string;
   total: number;
+  /** Clientes únicos reales por empresa/fecha calculados por el batch (sin filtros de dimensión). */
+  clientesUnicosTotal: number;
   data: ResumenRow[];
   message?: string;
 }

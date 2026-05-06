@@ -18,6 +18,7 @@ const initialState: FilterState = {
   dateMode: 'dateonly',
   queryMode: 'today',
   periodoSource: 'periodo',
+  redSocialModificado: false,
 };
 
 const filtersSlice = createSlice({
@@ -35,6 +36,7 @@ const filtersSlice = createSlice({
     },
     setRedSocial(state, action: PayloadAction<FilterOption[]>) {
       state.redSocial = action.payload;
+      state.redSocialModificado = true;
     },
     setGestiones(state, action: PayloadAction<FilterOption[]>) {
       state.gestiones = action.payload;
@@ -81,6 +83,7 @@ const filtersSlice = createSlice({
         dateMode: 'dateonly' as const,
         queryMode: 'today' as const,
         periodoSource: 'periodo' as const,
+        redSocialModificado: false,
       };
     },
   },

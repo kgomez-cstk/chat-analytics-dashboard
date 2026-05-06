@@ -35,6 +35,7 @@ const initialState: DashboardState = {
   conversations: [],
   chartData: [],
   loadDistribution: [],
+  clientesUnicosGlobal: null,
   isLoading: false,
   error: null,
 };
@@ -148,12 +149,34 @@ export const fetchDashboardResumen = createAsyncThunk(
 
     const rows = result.data;
 
+    // ── Clientes únicos: elegir la fuente más precisa ──────────────────────
+    // clientesUnicosTotal (de la tabla control) es el distinct real por día,
+    // pero no tiene en cuenta los filtros de dimensión activos.
+    // Si hay filtros activos → sumar CLIENTES_UNICOS por grupo desde los datos
+    //   filtrados (puede haber leve sobreconteo entre grupos, pero es coherente
+    //   con lo que el usuario seleccionó).
+    // Si no hay filtros → usar el valor exacto del batch.
+    const filtersActivos =
+      filters.canal.length > 0 ||
+      filters.redSocialModificado ||
+      filters.gestiones.length > 0 ||
+      filters.usuarioInicia.length > 0 ||
+      filters.usuarioFinaliza.length > 0 ||
+      toTipoUsuario(filters.tipoUsuario) !== undefined ||
+      // Skills: activo solo cuando se selecciona un subconjunto (no todos)
+      (filters.skills.length > 0 && filters.skills.length < catalogos.skills.length);
+
+    const clientesUnicosGlobal = filtersActivos
+      ? rows.reduce((sum, r) => sum + r.CLIENTES_UNICOS, 0)
+      : result.clientesUnicosTotal;
+
     return {
-      tiemposAtencion:  mapResumenToTiemposAtencion(rows),
-      advisors:         mapResumenToAdvisors(rows),
-      masterData:       mapResumenToMasterData(rows),
-      loadDistribution: mapResumenToLoadDistribution(rows),
-      chartData:        mapResumenToChartData(rows),
+      tiemposAtencion:     mapResumenToTiemposAtencion(rows),
+      advisors:            mapResumenToAdvisors(rows),
+      masterData:          mapResumenToMasterData(rows),
+      loadDistribution:    mapResumenToLoadDistribution(rows),
+      chartData:           mapResumenToChartData(rows),
+      clientesUnicosGlobal,
     };
   }
 );
@@ -217,13 +240,14 @@ const dashboardSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchDashboardHoy.fulfilled, (state, action) => {
-        state.tiemposAtencion  = action.payload.tiemposAtencion;
-        state.advisors         = action.payload.advisors;
-        state.masterData       = action.payload.masterData;
-        state.loadDistribution = action.payload.loadDistribution;
-        state.chartData        = action.payload.chartData;
-        state.isLoading        = false;
-        state.error            = null;
+        state.tiemposAtencion        = action.payload.tiemposAtencion;
+        state.advisors               = action.payload.advisors;
+        state.masterData             = action.payload.masterData;
+        state.loadDistribution       = action.payload.loadDistribution;
+        state.chartData              = action.payload.chartData;
+        state.clientesUnicosGlobal   = null; // /hoy y /periodo usan suma desde advisors
+        state.isLoading              = false;
+        state.error                  = null;
       })
       .addCase(fetchDashboardHoy.rejected, (state, action) => {
         state.isLoading = false;
@@ -237,13 +261,14 @@ const dashboardSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchDashboardResumen.fulfilled, (state, action) => {
-        state.tiemposAtencion  = action.payload.tiemposAtencion;
-        state.advisors         = action.payload.advisors;
-        state.masterData       = action.payload.masterData;
-        state.loadDistribution = action.payload.loadDistribution;
-        state.chartData        = action.payload.chartData;
-        state.isLoading        = false;
-        state.error            = null;
+        state.tiemposAtencion      = action.payload.tiemposAtencion;
+        state.advisors             = action.payload.advisors;
+        state.masterData           = action.payload.masterData;
+        state.loadDistribution     = action.payload.loadDistribution;
+        state.chartData            = action.payload.chartData;
+        state.clientesUnicosGlobal = action.payload.clientesUnicosGlobal;
+        state.isLoading            = false;
+        state.error                = null;
       })
       .addCase(fetchDashboardResumen.rejected, (state, action) => {
         state.isLoading = false;

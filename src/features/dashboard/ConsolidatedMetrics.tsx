@@ -33,8 +33,11 @@ const secondsToTime = (totalSeconds: number): string => {
 };
 
 const ConsolidatedMetrics: React.FC = () => {
-  const advisors = useAppSelector((state) => state.dashboard.advisors);
-  const tiemposAtencion = useAppSelector((state) => state.dashboard.tiemposAtencion);
+  const advisors            = useAppSelector((state) => state.dashboard.advisors);
+  const tiemposAtencion     = useAppSelector((state) => state.dashboard.tiemposAtencion);
+  // null → datos de /hoy o /periodo (suma desde advisors)
+  // number → datos de /resumen (ya resuelto en el thunk según filtros activos)
+  const clientesUnicosGlobal = useAppSelector((state) => state.dashboard.clientesUnicosGlobal);
 
   const stats = React.useMemo(() => {
     // Basic sums from advisors
@@ -47,6 +50,11 @@ const ConsolidatedMetrics: React.FC = () => {
       }),
       { totales: 0, conRespuesta: 0, abandono: 0, clientes: 0 }
     );
+
+    // Clientes únicos: si venimos de /resumen el thunk ya eligió la fuente correcta
+    // (batch para sin filtros, suma por grupo para con filtros).
+    // Para /hoy y /periodo se usa la suma desde advisors como siempre.
+    const clientesUnicos = clientesUnicosGlobal ?? basicStats.clientes;
 
     // Percentage Calculation
     const pctAbandono = basicStats.totales > 0
@@ -72,14 +80,14 @@ const ConsolidatedMetrics: React.FC = () => {
       { label: 'Conversaciones con Respuesta', value: basicStats.conRespuesta.toLocaleString(), icon: MdChatBubble, color: 'brand.secondary' },
       { label: 'Abandono Asesor', value: basicStats.abandono.toLocaleString(), icon: MdChatBubble, color: 'brand.error' },
       { label: '% Abandono', value: pctAbandono, icon: MdSpeed, color: 'brand.error' },
-      { label: 'Clientes Únicos', value: basicStats.clientes.toLocaleString(), icon: MdPersonSearch, color: 'brand.tertiary' },
+      { label: 'Clientes Únicos', value: clientesUnicos.toLocaleString(), icon: MdPersonSearch, color: 'brand.tertiary' },
       { label: 'Tiempo en Cola', value: secondsToTime(timeSums.cola / count), icon: MdAccessTime, color: 'brand.primaryDim' },
       { label: 'TMO', value: secondsToTime(timeSums.tmo / count), icon: MdSpeed, color: 'brand.secondary' },
       { label: 'TMA', value: secondsToTime(timeSums.tma / count), icon: MdAccessTime, color: 'brand.primary' },
       { label: 'TME Operador', value: secondsToTime(timeSums.tme / count), icon: MdTimer, color: 'brand.tertiary' },
       { label: 'TMR', value: secondsToTime(timeSums.tmr / count), icon: MdTimer, color: 'brand.secondaryDim' },
     ];
-  }, [advisors, tiemposAtencion]);
+  }, [advisors, tiemposAtencion, clientesUnicosGlobal]);
 
   return (
     <SimpleGrid columns={{ base: 1, sm: 2, md: 5 }} spacing={2} mb={6}>

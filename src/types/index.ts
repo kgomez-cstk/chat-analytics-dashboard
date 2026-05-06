@@ -72,6 +72,8 @@ export interface FilterState {
   queryMode: 'today' | 'range';
   /** Solo aplica cuando queryMode === 'range': fuente del endpoint a consultar. */
   periodoSource: 'periodo' | 'resumen';
+  /** true cuando el usuario modificó explícitamente la selección de red social desde el default (WhatsApp). */
+  redSocialModificado: boolean;
 }
 
 export interface SLAMetric {
@@ -142,6 +144,12 @@ export interface DashboardState {
   conversations: Conversation[];
   chartData: ChartDataPoint[];
   loadDistribution: LoadDistributionItem[];
+  /**
+   * Clientes únicos globales para usar en ConsolidatedMetrics.
+   * - null  → datos de /hoy o /periodo; usar suma desde advisors (comportamiento actual)
+   * - number → datos de /resumen; valor ya resuelto en el thunk según filtros activos
+   */
+  clientesUnicosGlobal: number | null;
   isLoading: boolean;
   error: string | null;
 }
