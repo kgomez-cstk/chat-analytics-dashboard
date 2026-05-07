@@ -70,8 +70,6 @@ export interface FilterState {
   fechaFin: string;
   dateMode: 'datetime' | 'dateonly';
   queryMode: 'today' | 'range';
-  /** Solo aplica cuando queryMode === 'range': fuente del endpoint a consultar. */
-  periodoSource: 'periodo' | 'resumen';
   /** true cuando el usuario modificó explícitamente la selección de red social desde el default (WhatsApp). */
   redSocialModificado: boolean;
 }

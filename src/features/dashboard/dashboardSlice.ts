@@ -114,7 +114,7 @@ export const fetchDashboardHoy = createAsyncThunk(
 
 /**
  * Thunk para el endpoint /operaciones/resumen.
- * Solo se activa en queryMode 'range' + periodoSource 'resumen'.
+ * Se activa siempre que queryMode === 'range'.
  * Consume filas pre-agregadas del batch: no realiza ninguna agregación extra,
  * simplemente las transforma al mismo formato de tipos que usa el dashboard.
  */

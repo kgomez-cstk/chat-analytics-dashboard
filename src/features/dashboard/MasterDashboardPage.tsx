@@ -28,8 +28,6 @@ const MasterDashboardPage: React.FC = () => {
   const queryMode     = useAppSelector((state) => state.filters.queryMode);
   const isInitialized = useAppSelector((state) => state.user.isInitialized);
 
-  const periodoSource = useAppSelector((state) => state.filters.periodoSource);
-
   const [activeReport, setActiveReport] = useState<'conversaciones' | 'tiempos' | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -79,19 +77,18 @@ const MasterDashboardPage: React.FC = () => {
 
   /**
    * Botón BUSCAR:
-   *   - queryMode 'today'              → /operaciones/hoy   (datos en tiempo real)
-   *   - queryMode 'range' + 'periodo'  → /operaciones/periodo (una fila por conversación)
-   *   - queryMode 'range' + 'resumen'  → /operaciones/resumen  (filas pre-agregadas del batch)
+   *   - queryMode 'today' → /operaciones/hoy   (datos en tiempo real)
+   *   - queryMode 'range' → /operaciones/resumen (filas pre-agregadas del batch)
    *
    * NUNCA se auto-llama al inicializar; espera la acción explícita del usuario.
    */
   const handleBuscar = useCallback(() => {
-    if (queryMode === 'range' && periodoSource === 'resumen') {
+    if (queryMode === 'range') {
       dispatch(fetchDashboardResumen());
     } else {
       dispatch(fetchDashboardHoy());
     }
-  }, [dispatch, queryMode, periodoSource]);
+  }, [dispatch, queryMode]);
 
   if (isLoading) return <LoadingDashboard />;
 
