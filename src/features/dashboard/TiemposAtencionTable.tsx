@@ -52,6 +52,10 @@ const TiemposAtencionTable: React.FC = () => {
         header: 'Clientes Únicos',
         cell: (info) => info.getValue(),
       }),
+      columnHelper.accessor('cantidadConversaciones', {
+        header: 'Cantidad de Conversaciones',
+        cell: (info) => info.getValue(),
+      }),
       columnHelper.accessor('abandonoAsesor', {
         header: 'Abandono Asesor',
         cell: (info) => info.getValue(),
@@ -59,10 +63,6 @@ const TiemposAtencionTable: React.FC = () => {
       columnHelper.accessor('porcentajeAbandono', {
         header: '% Abandono',
         cell: (info) => `${info.getValue().toFixed(2)}%`,
-      }),
-      columnHelper.accessor('cantidadConversaciones', {
-        header: 'Cantidad de Conversaciones',
-        cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('tiempoEnCola', {
         header: 'Tiempo en Cola',
@@ -174,13 +174,13 @@ const TiemposAtencionTable: React.FC = () => {
                 Clientes<br/>Únicos
               </Th>
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
+                Cantidad de<br/>Conversaciones
+              </Th>
+              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
                 Abandono<br/>Asesor
               </Th>
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
                 %<br/>Abandono
-              </Th>
-              <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
-                Cantidad de<br/>Conversaciones
               </Th>
               <Th py={3} borderRight="1px solid" borderColor="brand.outlineVariant" textAlign="center">
                 Tiempo en<br/>Cola
@@ -231,9 +231,9 @@ const TiemposAtencionTable: React.FC = () => {
                 TOTAL EQUIPO
               </Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.clientesUnicos}</Td>
+              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.cantidadConversaciones}</Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.abandonoAsesor}</Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.porcentajeAbandono}</Td>
-              <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.cantidadConversaciones}</Td>
               <Td textAlign="center" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tiempoEnCola}</Td>
               <Td textAlign="center" bg="purple.700" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tme}</Td>
               <Td textAlign="center" bg="blue.700" color="white" borderRight="1px solid" borderColor="brand.outlineVariant">{totals.tmo}</Td>

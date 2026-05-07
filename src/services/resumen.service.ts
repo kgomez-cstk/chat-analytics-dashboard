@@ -379,21 +379,18 @@ export function mapResumenToLoadDistribution(rows: ResumenRow[]): LoadDistributi
   }
   if (counts.size === 0) return [];
 
-  const total  = Array.from(counts.values()).reduce((a, b) => a + b, 0);
-  const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  // Total global (todos los usuarios) para que el % refleje participación real
+  const totalGlobal = Array.from(counts.values()).reduce((a, b) => a + b, 0);
+  const top10 = Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
 
-  let remaining = 100;
-  return sorted.map(([nombre, count], idx) => {
-    const isLast = idx === sorted.length - 1;
-    const pct    = isLast ? remaining : Math.round((count / total) * 100);
-    remaining -= pct;
-    return {
-      nombre,
-      shortName:  shortName(nombre),
-      porcentaje: pct,
-      color:      LOAD_COLORS[idx % LOAD_COLORS.length],
-    };
-  });
+  return top10.map(([nombre, count], idx) => ({
+    nombre,
+    shortName:  shortName(nombre),
+    porcentaje: Math.round((count / totalGlobal) * 100),
+    color:      LOAD_COLORS[idx % LOAD_COLORS.length],
+  }));
 }
 
 /**

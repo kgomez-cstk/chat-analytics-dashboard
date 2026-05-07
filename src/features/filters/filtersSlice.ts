@@ -38,6 +38,10 @@ const filtersSlice = createSlice({
       state.redSocial = action.payload;
       state.redSocialModificado = true;
     },
+    /** Pre-selección automática (desde API o reset): no marca redSocialModificado. */
+    setRedSocialInicial(state, action: PayloadAction<FilterOption[]>) {
+      state.redSocial = action.payload;
+    },
     setGestiones(state, action: PayloadAction<FilterOption[]>) {
       state.gestiones = action.payload;
     },
@@ -94,6 +98,7 @@ export const {
   setSkills,
   setTipoUsuario,
   setRedSocial,
+  setRedSocialInicial,
   setGestiones,
   setUsuarioInicia,
   setUsuarioFinaliza,

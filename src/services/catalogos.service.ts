@@ -103,11 +103,25 @@ export async function fetchGestionesCatalog(
 
 // ─── Endpoint 6: Operadores ───────────────────────────────────────────────────
 
+export interface OperadoresParams extends Pick<CatalogosParams, 'apiUrl' | 'idEmpresa' | 'signal'> {
+  /** IDs de canal separados por coma — limita por permisos sobre esos canales */
+  canales?: string;
+  /** IDs de skill separados por coma — limita por permisos sobre esos skills */
+  skills?: string;
+  /** IDs de red social separados por coma — limita por permisos sobre esas redes */
+  redesSociales?: string;
+}
+
 export async function fetchOperadoresCatalog(
-  { apiUrl, idEmpresa, signal }: Pick<CatalogosParams, 'apiUrl' | 'idEmpresa' | 'signal'>
+  { apiUrl, idEmpresa, canales, skills, redesSociales, signal }: OperadoresParams
 ): Promise<FilterOption[]> {
+  const qs = new URLSearchParams({ id_empresa: String(idEmpresa) });
+  if (canales)       qs.set('canales',        canales);
+  if (skills)        qs.set('skills',         skills);
+  if (redesSociales) qs.set('redes_sociales', redesSociales);
+
   const data = await fetchCatalog<OperadorItem>(
-    `${apiUrl}/catalogos/operadores?id_empresa=${idEmpresa}`,
+    `${apiUrl}/catalogos/operadores?${qs.toString()}`,
     signal
   );
   return data.map((item) => ({
@@ -124,13 +138,13 @@ export interface AllCatalogos {
   skills: FilterOption[];
   redesSociales: FilterOption[];
   gestiones: FilterOption[];
-  operadores: FilterOption[];
 }
 
 /**
- * Llama los 6 endpoints de catálogo en paralelo (Promise.allSettled).
- * Si alguno falla devuelve array vacío para ese catálogo y propaga
- * el primer mensaje de error encontrado.
+ * Carga los 5 catálogos de dimensión en paralelo (Promise.allSettled).
+ * Operadores se excluye intencionalmente: el thunk lo consulta de forma
+ * condicional solo si el usuario tiene al menos 1 permiso en canales,
+ * skills o redesSociales.
  */
 export async function fetchAllCatalogos(
   params: CatalogosParams
@@ -141,14 +155,12 @@ export async function fetchAllCatalogos(
     skillsResult,
     redesSocialesResult,
     gestionesResult,
-    operadoresResult,
   ] = await Promise.allSettled([
     fetchTipoUsuarioCatalog(params.apiUrl, params.signal),
     fetchCanalesCatalog(params),
     fetchSkillsCatalog(params),
     fetchRedesSocialesCatalog(params),
     fetchGestionesCatalog(params),
-    fetchOperadoresCatalog(params),
   ]);
 
   const resolve = <T>(result: PromiseSettledResult<T[]>): T[] =>
@@ -160,7 +172,6 @@ export async function fetchAllCatalogos(
     skillsResult,
     redesSocialesResult,
     gestionesResult,
-    operadoresResult,
   ]
     .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
     .map((r) => (r.reason instanceof Error ? r.reason.message : String(r.reason)));
@@ -171,7 +182,6 @@ export async function fetchAllCatalogos(
     skills: resolve(skillsResult),
     redesSociales: resolve(redesSocialesResult),
     gestiones: resolve(gestionesResult),
-    operadores: resolve(operadoresResult),
     errors,
   };
 }

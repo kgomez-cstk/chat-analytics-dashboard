@@ -245,26 +245,25 @@ export function mapToLoadDistribution(rows: OperacionRow[]): LoadDistributionIte
 
   if (counts.size === 0) return [];
 
-  const total = rows.length;
-  const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  // Total global (todos los usuarios) para que el % refleje participación real
+  const totalGlobal = rows.length;
 
-  let remaining = 100;
-  return sorted.map(([nombre, count], idx) => {
-    const isLast = idx === sorted.length - 1;
-    const pct = isLast ? remaining : Math.round((count / total) * 100);
-    remaining -= pct;
+  const top10 = Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
 
+  return top10.map(([nombre, count], idx) => {
     const parts = nombre.split(' ');
-    const shortName =
+    const short =
       parts.length >= 2
         ? `${parts[0][0]}. ${parts[parts.length - 1]}`
         : nombre;
 
     return {
       nombre,
-      shortName,
-      porcentaje: pct,
-      color: LOAD_COLORS[idx % LOAD_COLORS.length],
+      shortName:  short,
+      porcentaje: Math.round((count / totalGlobal) * 100),
+      color:      LOAD_COLORS[idx % LOAD_COLORS.length],
     };
   });
 }

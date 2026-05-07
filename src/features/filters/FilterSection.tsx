@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -10,6 +10,7 @@ import {
   Input,
   Badge,
   Spinner,
+  Tooltip,
 } from '@chakra-ui/react';
 import {
   Select,
@@ -24,6 +25,7 @@ import {
   setSkills,
   setTipoUsuario,
   setRedSocial,
+  setRedSocialInicial,
   setGestiones,
   setUsuarioInicia,
   setUsuarioFinaliza,
@@ -33,6 +35,7 @@ import {
   setPeriodoSource,
   resetFilters,
 } from './filtersSlice';
+import { fetchOperadoresFiltrados } from './catalogosSlice';
 import type { FilterOption } from '../../types';
 
 // ─── Value container personalizado ───────────────────────────────────────────
@@ -103,14 +106,91 @@ interface FilterSectionProps {
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 const FilterSection: React.FC<FilterSectionProps> = ({ onBuscar }) => {
-  const dispatch  = useAppDispatch();
-  const filters   = useAppSelector((state) => state.filters);
-  const catalogos = useAppSelector((state) => state.catalogos);
+  const dispatch       = useAppDispatch();
+  const filters        = useAppSelector((state) => state.filters);
+  const catalogos      = useAppSelector((state) => state.catalogos);
+  const isInitialized  = useAppSelector((state) => state.user.isInitialized);
 
   const isLoadingCat = catalogos.isLoading;
   const chakraStyles = makeChakraStyles(isLoadingCat);
   const commonComponents = { ValueContainer: CustomValueContainer };
   const noOptions = () => isLoadingCat ? 'Cargando...' : 'Sin opciones disponibles';
+
+  // ── Validación de configuración mínima requerida ──────────────────────────
+  // Solo aplica una vez que los catálogos hayan terminado de cargar.
+  const catalogosCargados = !isLoadingCat && isInitialized;
+  const sinConfiguracion: string[] = [];
+  if (catalogosCargados) {
+    if (catalogos.canales.length === 0)       sinConfiguracion.push('Canales de atención');
+    if (catalogos.skills.length === 0)        sinConfiguracion.push('Skills / Equipos');
+    if (catalogos.redesSociales.length === 0) sinConfiguracion.push('Redes Sociales');
+  }
+  const bloqueado = sinConfiguracion.length > 0;
+  const mensajeBloqueado = bloqueado
+    ? `Sin configuración: ${sinConfiguracion.join(', ')}`
+    : '';
+
+  // ── Refs para lecturas sin crear dependencias reactivas ───────────────────
+  const usuarioIniciaRef   = useRef(filters.usuarioInicia);
+  const usuarioFinalizaRef = useRef(filters.usuarioFinaliza);
+  usuarioIniciaRef.current  = filters.usuarioInicia;
+  usuarioFinalizaRef.current = filters.usuarioFinaliza;
+
+  /**
+   * Almacena las referencias previas de canal/skills/redSocial.
+   * Se inicializa con los valores actuales para que la primera ejecución
+   * del efecto (ya sea en el montaje inicial o en un remonte por isLoading)
+   * NO dispare un re-fetch innecesario: solo cambia si el usuario modificó
+   * explícitamente alguno de esos filtros o si fetchCatalogos corrigió la
+   * selección de WhatsApp (caso en que WhatsApp no está en el catálogo).
+   */
+  const prevFiltersRef = useRef({
+    canal:     filters.canal,
+    skills:    filters.skills,
+    redSocial: filters.redSocial,
+  });
+
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const prev = prevFiltersRef.current;
+    const changed =
+      prev.canal     !== filters.canal  ||
+      prev.skills    !== filters.skills ||
+      prev.redSocial !== filters.redSocial;
+
+    prevFiltersRef.current = {
+      canal:     filters.canal,
+      skills:    filters.skills,
+      redSocial: filters.redSocial,
+    };
+
+    if (changed) {
+      dispatch(fetchOperadoresFiltrados());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.canal, filters.skills, filters.redSocial, isInitialized]);
+
+  /**
+   * Cuando la lista de operadores cambia, elimina de las selecciones actuales
+   * de usuarioInicia y usuarioFinaliza los usuarios que ya no pertenecen
+   * al universo filtrado.
+   */
+  useEffect(() => {
+    if (catalogos.operadores.length === 0) return;
+    const validIds = new Set(catalogos.operadores.map((o) => String(o.value)));
+
+    const newInicia = usuarioIniciaRef.current.filter((u) => validIds.has(String(u.value)));
+    if (newInicia.length !== usuarioIniciaRef.current.length) {
+      dispatch(setUsuarioInicia(newInicia));
+    }
+
+    const newFinaliza = usuarioFinalizaRef.current.filter((u) => validIds.has(String(u.value)));
+    if (newFinaliza.length !== usuarioFinalizaRef.current.length) {
+      dispatch(setUsuarioFinaliza(newFinaliza));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalogos.operadores]);
 
   return (
     <Box bg="brand.surfaceContainerLow" p={4} rounded="xl" shadow="sm">
@@ -342,19 +422,33 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onBuscar }) => {
 
         {/* ── Botones ──────────────────────────────────────────────────────── */}
         <VStack spacing={2} minW={{ lg: '150px' }} align="stretch" justify="center">
-          <Button
-            variant="outline"
-            borderColor="brand.primary"
-            color="brand.primary"
-            _hover={{ bg: 'brand.primaryContainer' }}
-            leftIcon={isLoadingCat ? <Spinner size="xs" /> : <Icon as={MdSearch} />}
-            shadow="md"
-            w="full"
-            isDisabled={isLoadingCat}
-            onClick={onBuscar}
+          <Tooltip
+            label={mensajeBloqueado}
+            isDisabled={!bloqueado}
+            hasArrow
+            placement="top"
+            bg="orange.500"
+            color="white"
+            fontSize="xs"
           >
-            {isLoadingCat ? 'Cargando...' : 'Buscar'}
-          </Button>
+            {/* Wrapper necesario para que Tooltip funcione con botón deshabilitado */}
+            <Box w="full">
+              <Button
+                variant="outline"
+                borderColor="brand.primary"
+                color="brand.primary"
+                _hover={{ bg: 'brand.primaryContainer' }}
+                leftIcon={isLoadingCat ? <Spinner size="xs" /> : <Icon as={MdSearch} />}
+                shadow="md"
+                w="full"
+                isDisabled={isLoadingCat || bloqueado}
+                onClick={onBuscar}
+              >
+                {isLoadingCat ? 'Cargando...' : 'Buscar'}
+              </Button>
+            </Box>
+          </Tooltip>
+
           <Button
             variant="outline"
             borderColor="brand.primary"
@@ -363,7 +457,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({ onBuscar }) => {
             shadow="md"
             leftIcon={<Icon as={MdFilterAltOff} />}
             fontWeight="bold"
-            onClick={() => dispatch(resetFilters())}
+            onClick={() => {
+              dispatch(resetFilters());
+              // Si WhatsApp no está en el catálogo, limpiar la pre-selección que resetFilters restaura
+              const whatsappEnCatalogo = catalogos.redesSociales.some((r) => String(r.value) === '1');
+              if (!whatsappEnCatalogo) {
+                dispatch(setRedSocialInicial([]));
+              }
+            }}
             w="full"
           >
             Limpiar Filtros

@@ -52,9 +52,9 @@ const ReportGenerationCards: React.FC<ReportGenerationCardsProps> = ({ onPreview
       const columns = [
         { accessorKey: 'nombre', header: 'Nombre' },
         { accessorKey: 'clientesUnicos', header: 'Clientes Únicos' },
+        { accessorKey: 'cantidadConversaciones', header: 'Cantidad Conversaciones' },
         { accessorKey: 'abandonoAsesor', header: 'Abandono Asesor' },
         { accessorKey: 'porcentajeAbandono', header: '% Abandono' },
-        { accessorKey: 'cantidadConversaciones', header: 'Cantidad Conversaciones' },
         { accessorKey: 'tiempoEnCola', header: 'Tiempo En Cola' },
         { accessorKey: 'tma', header: 'TMA' },
         { accessorKey: 'tmeOperador', header: 'TME Operador' },
